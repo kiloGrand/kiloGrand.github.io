@@ -1,0 +1,214 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>xv6 第五章 | kiloGrand</title><meta name="keywords" content="xv6"><meta name="author" content="kiloGrand"><meta name="copyright" content="kiloGrand"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="第五章：中断和设备驱动驱动是操作系统中管理特定设备的代码，它有如下功能：1、配置设备相关的硬件，2、告诉设备需要怎样执行，3、处理设备产生的中断，4、与等待设备I&#x2F;O的进程进行交互。驱动程序的代码写起来可能很棘手，因为驱动程序与它所管理的设备会并发。此外，驱动必须了解设备的硬件接口，但硬件接口可能是很复杂的，而且文档不够完善。 需要操作系统关注的设备通常可以被配置为产生中断，这是trap的一种类型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xv6 第五章">
+<meta property="og:url" content="https://kilogrand.gitee.io/2022/08/31/xv6-Chapter-5/index.html">
+<meta property="og:site_name" content="kiloGrand">
+<meta property="og:description" content="第五章：中断和设备驱动驱动是操作系统中管理特定设备的代码，它有如下功能：1、配置设备相关的硬件，2、告诉设备需要怎样执行，3、处理设备产生的中断，4、与等待设备I&#x2F;O的进程进行交互。驱动程序的代码写起来可能很棘手，因为驱动程序与它所管理的设备会并发。此外，驱动必须了解设备的硬件接口，但硬件接口可能是很复杂的，而且文档不够完善。 需要操作系统关注的设备通常可以被配置为产生中断，这是trap的一种类型">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kilogrand.gitee.io/img/coding.jpg">
+<meta property="article:published_time" content="2022-08-30T21:41:10.000Z">
+<meta property="article:modified_time" content="2022-09-02T05:19:16.540Z">
+<meta property="article:author" content="kiloGrand">
+<meta property="article:tag" content="xv6">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kilogrand.gitee.io/img/coding.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kilogrand.gitee.io/2022/08/31/xv6-Chapter-5/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'xv6 第五章',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-09-02 13:19:16'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/profile.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/coding.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">kiloGrand</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">xv6 第五章</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-08-30T21:41:10.000Z" title="发表于 2022-08-31 05:41:10">2022-08-31</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-09-02T05:19:16.540Z" title="更新于 2022-09-02 13:19:16">2022-09-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>10分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="xv6 第五章"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="第五章：中断和设备驱动"><a href="#第五章：中断和设备驱动" class="headerlink" title="第五章：中断和设备驱动"></a>第五章：中断和设备驱动</h2><p><strong><em>驱动</em></strong>是操作系统中管理特定设备的代码，它有如下功能：1、配置设备相关的硬件，2、告诉设备需要怎样执行，3、处理设备产生的中断，4、与等待设备I/O的进程进行交互。驱动程序的代码写起来可能很棘手，因为驱动程序与它所管理的设备会并发。此外，驱动必须了解设备的硬件接口，但硬件接口可能是很复杂的，而且文档不够完善。</p>
+<p>需要操作系统关注的设备通常可以被配置为产生中断，这是trap的一种类型。内核trap处理代码可以知道设备何时引发了中断，并调用驱动的中断处理程序；在xv6中，这个处理发生在<strong>devintr</strong>(kernel/trap.c:177)中。</p>
+<p>许多设备驱动程序在两个context中执行代码：上半部分（<strong><em>top half</em></strong>）在进程的内核线程中运行，下半部分（<strong><em>bottom half</em></strong>）在中断时执行。上半部分是通过系统调用，如希望执行I/O的 read和write。这段代码可能会要求硬件开始一个操作（比如要求磁盘读取一个块）；然后代码等待操作完成。最终设备完成操作并引发一个中断。驱动程序的中断处理程序，作为<strong>下半部分</strong>，找出什么操作已经完成，如果合适的话，唤醒一个等待该操作的进程，并告诉硬件执行下一个操作。</p>
+<h3 id="5-1-Code-Console-input"><a href="#5-1-Code-Console-input" class="headerlink" title="5.1 Code: Console input"></a>5.1 Code: Console input</h3><p>​    控制台驱动(console.c)是驱动结构的一个简单说明。控制台驱动通过连接到RISC-V上的UART串行端口硬件，接受输入的字符。控制台驱动程序每次累计一行输入，处理特殊的输入字符，如退格键和control-u。用户进程，如shell，使用<strong>read</strong>系统调用从控制台获取输入行。当你在QEMU中向xv6输入时，你的按键会通过QEMU的模拟UART硬件传递给xv6。</p>
+<p>与驱动交互的UART硬件是由QEMU仿真的16550芯片[11]。在真实的计算机上，16550将管理一个连接到终端或其他计算机的RS232串行链接。当运行QEMU时，它连接到你的键盘和显示器上。</p>
+<p>UART硬件在软件看来是一组<strong>内存映射</strong>的控制寄存器。也就是说，有一些RISC-V硬件的物理内存地址会关联到UART设备，因此加载和存储与设备硬件而不是RAM交互。UART的内存映射地址从0x10000000开始，即<strong>UART0</strong>（kernel/memlayout.h:21）。这里有一些UART控制寄存器，每个寄存器的宽度是一个字节。它们与UART0的偏移量定义在(kernel/uart.c:22)。例如，<strong>LSR</strong>寄存器中一些位表示是否有输入字符在等待软件读取。这些字符（如果有的话）可以从<strong>RHR</strong>寄存器中读取。每次读取一个字符，UART硬件就会将其从内部等待字符的FIFO中删除，并在FIFO为空时清除<strong>LSR</strong>中的就绪位。UART传输硬件在很大程度上是独立于接收硬件的，如果软件向<strong>THR</strong>写入一个字节，UART就会发送该字节。</p>
+<p>Xv6的<strong>main</strong>调用<strong>consoleinit</strong>（kernel/console.c:184）来初始化UART硬件。这段代码配置了UART，当UART接收到一个字节的输入时，就产生一个接收中断，当UART每次完成发送一个字节的输出时，产生一个<strong><em>传输完成(transmit complete)</em></strong>中断(kernel/uart.c:53)。</p>
+<p>xv6 shell通过<strong>init.c</strong>(user/init.c:19)打开的文件描述符从控制台读取。对<strong>read</strong>的系统调用通过内核到达<strong>consoleread</strong>（kernel/console.c:82） 。<strong>consoleread</strong>等待输入的到来(通过中断)，输入会被缓冲在<strong>cons.buf</strong>，然后将输入复制到用户空间，再然后(在一整行到达后)返回到用户进程。如果用户还没有输入完整的行，任何调用了<strong>read</strong>进程将在<strong>sleep</strong>中等待(kernel/console.c:98)(第7章解释了sleep的细节)。</p>
+<p>当用户键入一个字符时，UART硬件向RISC-V抛出一个中断，从而激活xv6的<strong>trap</strong>处理程序。trap处理程序调用devintr(kernel/trap.c:177)，它查看RISC-V的<strong>scause</strong>寄存器，发现中断来自一个外部设备。然后它向一个叫做PLIC[1]的硬件单元询问哪个设备中断了(kernel/trap.c:186)。如果是UART，<strong>devintr</strong>调用<strong>uartintr</strong>。</p>
+<p><strong>uartintr</strong> (kernel/uart.c:180) 从<strong>UART</strong>硬件中读取在等待的输入字符，并将它们交给<strong>consoleintr</strong> (kernel/console.c:138)；它不会等待输入字符，因为以后的输入会引发一个新的中断。<strong>consoleintr</strong>的工作是将中输入字符积累<strong>cons.buf</strong>中，直到有一行字符。 <strong>consoleintr</strong>会特别处理退格键和其他一些字符。当一个新行到达时，<strong>consoleintr</strong>会唤醒一个等待的<strong>consoleread</strong>（如果有的话）。</p>
+<p>一旦被唤醒，<strong>consoleread</strong>将会注意到<strong>cons.buf</strong>中的完整行，并将其将其复制到用户空间，并返回（通过系统调用机制）到用户空间。</p>
+<h3 id="5-2-Code-Console-output"><a href="#5-2-Code-Console-output" class="headerlink" title="5.2 Code: Console output"></a>5.2 Code: Console output</h3><p>​    向控制台写数据的<strong>write</strong>系统调用最终会到达<strong>uartputc</strong>(kernel/uart.c:87)。设备驱动维护了一个输出缓冲区(<strong>uart_tx_buf</strong>)，这样写进程就不需要等待UART完成发送；相反，<strong>uartputc</strong>将每个字符追加到缓冲区，调用<strong>uartstart</strong>来启动设备发送(如果还没有的话)，然后返回。<strong>Uartputc</strong>只有在缓冲区满的时候才会等待。</p>
+<p>​    每次UART发送完成一个字节，它都会产生一个中断。<strong>uartintr</strong>调用<strong>uartstart</strong>，<strong>uartintr</strong>检查设备是否真的发送完毕，并将下一个缓冲输出字符交给设备，每当UART发送完一个字节，就会产生一个中断。因此，如果一个进程向控制台写入多个字节，通常第一个字节将由uartputc s调用uartstart发送，其余的缓冲字节将由uartintr调用uartstart发送，因为发送完成中断到来。</p>
+<p><strong>uartintr</strong>调用<strong>uartstart</strong>，<strong>uartintr</strong>查看设备是否真的发送完成，并将下一个缓冲输出字符交给设备，每当UART发送完一个字节，就会产生一个中断。因此，如果一个进程向控制台写入多个字节，通常第一个字节将由<strong>uartputc</strong>对<strong>uartstart</strong>的调用发送，其余的缓冲字节将随着发送完成中断的到来由<strong>uartintr</strong>的<strong>uartstart</strong>调用发送。</p>
+<p>有一个通用模式需要注意，设备活动和进程活动需要解耦，这将通过缓冲和中断来实现。控制台驱动程序可以处理输入，即使没有进程等待读取它；随后的读取将看到输入。同样，进程可以发送输出字节，而不必等待设备。这种解耦可以通过允许进程与设备I/O并发执行来提高性能，当设备速度很慢（如UART）或需要立即关注（如回显键入的字节）时，这种解耦尤为重要。这个idea有时被称为<strong><em>I/O并发</em></strong>。</p>
+<h3 id="5-3-Concurrency-in-drivers"><a href="#5-3-Concurrency-in-drivers" class="headerlink" title="5.3 Concurrency in drivers"></a>5.3 Concurrency in drivers</h3><p>你可能已经注意到在<strong>consoleread</strong>和<strong>consoleintr</strong>中会调用<strong>acquire</strong>。<strong>acquire</strong>调用会获取一个锁，保护控制台驱动的数据结构不被并发访问。这里有三个并发风险：不同CPU上的两个进程可能会同时调用<strong>consoleread</strong>；硬件可能会在一个CPU正在执行consoleread时，向该CPU抛出一个控制台（实际上是UART）中断；硬件可能会在consoleread执行时向另一个CPU抛出一个控制台中断。第6章探讨锁如何在这些情况下提供帮助。</p>
+<p>需要关注驱动并发安全的另一个原因是，一个进程可能正在等待来自设备的输入，但是当表明输入到来的中断发生时该进程已经没有在运行（被切换）。因此，中断处理程序不允许知道被中断的进程或代码。例如，一个中断处理程序不能安全地用当前进程的页表调用<strong>copyout</strong>。中断处理程序通常只做相对较少的工作（例如，只是将输入数据复制到缓冲区），并唤醒<strong><em>上半部分</em></strong>代码来做剩下的工作。</p>
+<h3 id="5-4-Timer-interrupts"><a href="#5-4-Timer-interrupts" class="headerlink" title="5.4 Timer interrupts"></a>5.4 Timer interrupts</h3><p>Xv6使用定时器中断来维护它的时钟，并使它能够切换计算密集型进程；<strong>usertrap</strong>和<strong>kerneltrap</strong>中的<strong>yield</strong>调用会导致这种切换。每个RISC-V CPU的时钟硬件都会抛出时钟中断。Xv6对这个时钟硬件进行编程，使其定期周期性地中断相应的CPU。</p>
+<p>RISC-V要求在机器模式下处理定时器中断，而不是监督者模式。RISCV机器模式执行时没有分页，并且有一套单独的控制寄存器，因此在机器模式下运行普通的xv6内核代码是不实用的。因此，xv6对定时器中断的处理与上面谈到的trap机制完全分离了。</p>
+<p>在main执行之前的<strong>start.c</strong>，是在机器模式下执行的。它设置了接收定时器中断(kernel/start.c:57)。一部分工作是对<strong>CLINT</strong>硬件（<strong>core-local interruptor</strong>）进行编程，使其每隔一定时间产生一次中断。另一部分是设置一个类似于<strong>trapframe</strong>的暂存区，帮助定时器中断处理程序保存寄存器和<strong>CLINT</strong>寄存器的地址。最后，<strong>start</strong>将<strong>mtvec</strong>设置为<strong>timervec</strong>，启用定时器中断。</p>
+<p>定时器中断可能发生在用户或内核代码执行的任何时候；内核没有办法在关键操作中禁用定时器中断。因此，定时器中断处理程序必须以保证不干扰被中断的内核代码的方式进行工作。基本策略是处理程序要求RISC-V引发一个软件中断并立即返回。RISC-V用普通的trap机制将软件中断传递给内核，并允许内核禁用它们。处理定时器中断产生的软件中断的代码可以在<strong>devintr</strong>（kernel/trap.c:204）中看到。</p>
+<p>机器模式的定时器中断向量是<strong>timervec</strong>(kernel/kernelvec.S:93)。它在<strong>start</strong>准备的暂存区保存一些寄存器，告诉<strong>CLINT</strong>何时产生下一个定时器中断，使RISC-V产生一个软件中断，恢复寄存器，然后返回。在定时器中断处理程序中没有C代码。</p>
+<h3 id="5-5-Real-world"><a href="#5-5-Real-world" class="headerlink" title="5.5 Real world"></a>5.5 Real world</h3><p>Xv6允许在内核和用户程序执行时使用设备和定时器中断。定时器中断可以强制从定时器中断处理程序进行线程切换（调用<strong>yield</strong>），即使是在内核中执行。如果内核线程有时会花费大量的时间进行计算，而不返回用户空间，那么在内核线程之间公平地对CPU进行时间划分的能力是很有用的。然而，内核代码需要注意它可能会被暂停（由于定时器中断），然后在不同的CPU上恢复，这是xv6中一些复杂的根源。如果设备和定时器中断只发生在执行用户代码时，内核可以变得更简单一些。</p>
+<p>在一台典型的计算机上支持所有设备的全貌是一件很辛苦的事情，因为设备很多，设备有很多功能，设备和驱动程序之间的协议可能很复杂，而且文档也不完善。在许多操作系统中，驱动程序所占的代码比核心内核还多。</p>
+<p>UART驱动器通过读取UART控制寄存器，一次读取一个字节的数据；这种模式被称为编程I/O，因为软件在控制数据移动。程序化I/O简单，但速度太慢，无法在高数据速率下使用。需要高速移动大量数据的设备通常使用<strong><em>直接内存访问(direct memory access, DMA)</em></strong>。DMA设备硬件直接将传入数据写入RAM，并从RAM中读取传出数据。现代磁盘和网络设备都使用DMA。DMA设备的驱动程序会在RAM中准备数据，然后使用对控制寄存器的一次写入来告诉设备处理准备好的数据。</p>
+<p>当设备在不可预知的时间需要关注,且不那么频繁时，中断是很有用的。但中断对CPU的开销很大。因此，高速设备，如网络和磁盘控制器，使用了减少对中断需求的技巧。其中一个技巧是对整批传入或传出的请求提出一个单一的中断。另一个技巧是让驱动程序完全禁用中断，并定期检查设备是否需要关注。这种技术称为<strong><em>轮询（polling）</em></strong>。如果设备执行操作的速度非常快，轮询是有意义的，但如果设备大部分时间处于空闲状态，则会浪费CPU时间。一些驱动程序会根据当前设备的负载情况，在轮询和中断之间动态切换。</p>
+<p>UART驱动首先将输入的数据复制到内核的缓冲区，然后再复制到用户空间。这在低数据速率下是有意义的，但对于那些快速生成或消耗数据的设备来说，这样的双重拷贝会大大降低性能。一些操作系统能够直接在用户空间缓冲区和设备硬件之间移动数据，通常使用DMA。</p>
+<h3 id="5-6-Exercises"><a href="#5-6-Exercises" class="headerlink" title="5.6 Exercises"></a>5.6 Exercises</h3><ol>
+<li><p>修改uart.c，使其完全不使用中断。你可能还需要修改 console.c。</p>
+</li>
+<li><p>添加一个网卡驱动。</p>
+</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://kilogrand.gitee.io">kiloGrand</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://kilogrand.gitee.io/2022/08/31/xv6-Chapter-5/">https://kilogrand.gitee.io/2022/08/31/xv6-Chapter-5/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://kilogrand.gitee.io" target="_blank">kiloGrand</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/xv6/">xv6</a></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/08/31/xv6-Chapter-4/"><img class="prev-cover" src="/img/coding.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">xv6 第四章</div></div></a></div><div class="next-post pull-right"><a href="/2022/08/31/xv6-Chapter-6/"><img class="next-cover" src="/img/coding.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">xv6 第六章</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/08/31/xv6-Chapter-1/" title="xv6 第一章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第一章</div></div></a></div><div><a href="/2022/08/31/xv6-Chapter-2/" title="xv6 第二章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第二章</div></div></a></div><div><a href="/2022/08/31/xv6-Chapter-3/" title="xv6 第三章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第三章</div></div></a></div><div><a href="/2022/08/31/xv6-Chapter-4/" title="xv6 第四章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第四章</div></div></a></div><div><a href="/2022/08/31/xv6-Chapter-7/" title="xv6 第七章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第七章</div></div></a></div><div><a href="/2022/08/31/xv6-Chapter-6/" title="xv6 第六章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第六章</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/profile.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">kiloGrand</div><div class="author-info__description">coder && data-science researcher</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kiloGrand/"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9A%E4%B8%AD%E6%96%AD%E5%92%8C%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8"><span class="toc-number">1.</span> <span class="toc-text">第五章：中断和设备驱动</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-Code-Console-input"><span class="toc-number">1.1.</span> <span class="toc-text">5.1 Code: Console input</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-Code-Console-output"><span class="toc-number">1.2.</span> <span class="toc-text">5.2 Code: Console output</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-Concurrency-in-drivers"><span class="toc-number">1.3.</span> <span class="toc-text">5.3 Concurrency in drivers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-Timer-interrupts"><span class="toc-number">1.4.</span> <span class="toc-text">5.4 Timer interrupts</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-Real-world"><span class="toc-number">1.5.</span> <span class="toc-text">5.5 Real world</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-6-Exercises"><span class="toc-number">1.6.</span> <span class="toc-text">5.6 Exercises</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/31/xv6-Chapter-9/" title="xv6 第九章">xv6 第九章</a><time datetime="2022-08-31T01:41:10.000Z" title="发表于 2022-08-31 09:41:10">2022-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/31/xv6-Chapter-8/" title="xv6 第八章">xv6 第八章</a><time datetime="2022-08-31T00:41:10.000Z" title="发表于 2022-08-31 08:41:10">2022-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/31/xv6-Chapter-7/" title="xv6 第七章">xv6 第七章</a><time datetime="2022-08-30T23:41:10.000Z" title="发表于 2022-08-31 07:41:10">2022-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/31/xv6-Chapter-6/" title="xv6 第六章">xv6 第六章</a><time datetime="2022-08-30T22:41:10.000Z" title="发表于 2022-08-31 06:41:10">2022-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/31/xv6-Chapter-5/" title="xv6 第五章">xv6 第五章</a><time datetime="2022-08-30T21:41:10.000Z" title="发表于 2022-08-31 05:41:10">2022-08-31</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By kiloGrand</div><div class="footer_custom_text">Hi, welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>xv6 第四章 | kiloGrand</title><meta name="keywords" content="xv6"><meta name="author" content="kiloGrand"><meta name="copyright" content="kiloGrand"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="第四章：陷阱和系统调用有三种事件会导致CPU搁置普通指令的执行，强制将控制权转移给处理该事件的特殊代码。一种情况是系统调用，当用户程序执行ecall指令要求内核为其做某事时。另一种情况是异常：一条指令（用户或内核）做了一些非法的事情，如除以零或使用无效的虚拟地址。第三种情况是设备中断，当一个设备发出需要注意的信号时，例如当磁盘硬件完成一个读写请求时。 本书使用trap作为这些情况的通用术语。通常，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xv6 第四章">
+<meta property="og:url" content="https://kilogrand.gitee.io/2022/08/31/xv6-Chapter-4/index.html">
+<meta property="og:site_name" content="kiloGrand">
+<meta property="og:description" content="第四章：陷阱和系统调用有三种事件会导致CPU搁置普通指令的执行，强制将控制权转移给处理该事件的特殊代码。一种情况是系统调用，当用户程序执行ecall指令要求内核为其做某事时。另一种情况是异常：一条指令（用户或内核）做了一些非法的事情，如除以零或使用无效的虚拟地址。第三种情况是设备中断，当一个设备发出需要注意的信号时，例如当磁盘硬件完成一个读写请求时。 本书使用trap作为这些情况的通用术语。通常，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kilogrand.gitee.io/img/coding.jpg">
+<meta property="article:published_time" content="2022-08-30T20:41:10.000Z">
+<meta property="article:modified_time" content="2022-09-02T05:19:26.009Z">
+<meta property="article:author" content="kiloGrand">
+<meta property="article:tag" content="xv6">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kilogrand.gitee.io/img/coding.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kilogrand.gitee.io/2022/08/31/xv6-Chapter-4/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'xv6 第四章',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-09-02 13:19:26'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/profile.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/coding.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">kiloGrand</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">xv6 第四章</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-08-30T20:41:10.000Z" title="发表于 2022-08-31 04:41:10">2022-08-31</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-09-02T05:19:26.009Z" title="更新于 2022-09-02 13:19:26">2022-09-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">5.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>17分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="xv6 第四章"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="第四章：陷阱和系统调用"><a href="#第四章：陷阱和系统调用" class="headerlink" title="第四章：陷阱和系统调用"></a>第四章：陷阱和系统调用</h2><p>有三种事件会导致CPU搁置普通指令的执行，强制将控制权转移给处理该事件的特殊代码。一种情况是<strong><em>系统调用</em></strong>，当用户程序执行<strong>ecall</strong>指令要求内核为其做某事时。另一种情况是<strong><em>异常</em></strong>：一条指令（用户或内核）做了一些非法的事情，如除以零或使用无效的虚拟地址。第三种情况是设备<strong><em>中断</em></strong>，当一个设备发出需要注意的信号时，例如当磁盘硬件完成一个读写请求时。</p>
+<p>本书使用<strong><em>trap</em></strong>作为这些情况的通用术语。通常，代码在执行时发生trap，之后都会被恢复，而且不需要意识到发生了什么特殊的事情。也就是说，我们通常希望trap是透明的；这一点对于中断来说尤其重要，被中断的代码通常不会意识到会发生trap。通常的顺序是：trap迫使控制权转移到内核；内核保存寄存器和其他状态，以便恢复执行；内核执行适当的处理程序代码（例如，系统调用实现或设备驱动程序）；内核恢复保存的状态，并从trap中返回；代码从原来的地方恢复执行。</p>
+<p>xv6内核会处理所有的trap。这对于系统调用来说是很自然的。这对中断来说也是合理的，因为隔离要求用户进程不能直接使用设备，而且只有内核才有设备处理所需的状态。这对异常处理来说也是合理的，因为xv6响应所有来自用户空间的异常，并杀死该违规程序。</p>
+<p>Xv6 trap 处理分为四个阶段：RISC-V CPU采取的硬件行为，为内核C代码准备的汇编入口，处理trap的C 处理程序，以及系统调用或设备驱动服务。虽然三种trap类型之间的共性表明，内核可以用单一的代码入口处理所有的trap，但事实证明，为三种不同的情况，即来自用户空间的trap、来自内核空间的trap和定时器中断，设置单独的汇编入口和C trap处理程序会更方便的。</p>
+<h3 id="4-1-RISC-V-trap-machinery"><a href="#4-1-RISC-V-trap-machinery" class="headerlink" title="4.1 RISC-V trap machinery"></a>4.1 RISC-V trap machinery</h3><p>每个RISC-V CPU都有一组控制寄存器，内核写入这些寄存器来告诉CPU如何处理trap，内核可以通过读取这些寄存器来发现已经发生的trap。RISC-V文档包含了完整的叙述[1]。riscv.h（kernel/riscv.h:1）包含了xv6使用的定义。这里是最重要的寄存器的概述。</p>
+<ul>
+<li><p><code>stvec</code>：内核在这里写下trap处理程序的地址；RISC-V跳转到这里来处理trap。</p>
+</li>
+<li><p><code>sepc</code>：当trap发生时，RISC-V会将程序计数器保存在这里（因为<code>PC</code>会被<code>stvec</code>覆盖）。<code>sret</code>（从trap中返回）指令将<code>sepc</code>复制到<code>pc</code>中。内核可以写<code>sepc</code>来控制<code>sret</code>的返回到哪里。</p>
+</li>
+<li><p><code>scause</code>：RISC -V在这里放了一个数字，描述了trap的原因。</p>
+</li>
+<li><p><code>sscratch</code>：内核在这里放置了一个值，在trap处理程序开始时可以方便地使用。</p>
+</li>
+<li><p><code>sstatus</code>：<code>sstatus</code>中的<strong>SIE</strong>位控制设备中断是否被启用，如果内核清除<strong>SIE</strong>，RISC-V将推迟设备中断，直到内核设置<strong>SIE</strong>。<strong>SPP</strong>位表示trap是来自用户模式还是supervisor模式，并控制<code>sret</code>返回到什么模式。</p>
+<p>上述寄存器与在特权态模式下处理的trap有关，在用户模式下不能读或写。对于机器模式下处理的trap，有一组等效的控制寄存器；xv6只在定时器中断的特殊情况下使用它们。</p>
+</li>
+</ul>
+<p>多核芯片上的每个CPU都有自己的一组这些寄存器，而且在任何时候都可能有多个CPU在处理一个trap。</p>
+<p>当需要执行trap时，RISC-V硬件对所有的trap类型（除定时器中断外）进行以下操作：</p>
+<ol>
+<li>如果该trap是设备中断，且<code>sstatus</code> <strong>SIE</strong>位为0，则不执行以下任何操作。</li>
+<li>通过清除SIE来禁用中断。</li>
+<li>复制<code>pc</code>到<code>sepc</code>。</li>
+<li>将当前模式（用户态或特权态）保存在<code>sstatus</code>的<strong>SPP</strong>位。</li>
+<li>在<code>scause</code>设置该次trap的原因。</li>
+<li>将模式转换为特权态。</li>
+<li>将<code>stvec</code>复制到<code>pc</code>。</li>
+<li>从新的<code>pc</code>开始执行。</li>
+</ol>
+<p>注意，CPU不会切换到内核页表，不会切换到内核中的栈，也不会保存pc以外的任何寄存器。内核软件必须执行这些任务。CPU在trap期间做很少的工作的一个原因是为了给软件提供灵活性，例如，一些操作系统在某些情况下不需要页表切换，这可以提高性能。</p>
+<p>你可能会想CPU的trap处理流程是否可以进一步简化。例如，假设CPU没有切换程序计数器（pc）。那么trap可以切换到监督者模式时，还在运行用户指令。这些用户指令可以打破用户空间/内核空间的隔离，例如通过修改<code>satp</code>寄存器指向一个允许访问所有物理内存的页表。因此，CPU必须切换到内核指定的指令地址，即<code>stvec</code>。</p>
+<h3 id="4-2-Traps-from-user-space"><a href="#4-2-Traps-from-user-space" class="headerlink" title="4.2 Traps from user space"></a>4.2 Traps from user space</h3><p>在用户空间执行时，如果用户程序进行了系统调用（<code>ecall</code>指令），或者做了一些非法的事情，或者设备中断，都可能发生trap。来自用户空间的trap的处理路径是<code>uservec</code>（kernel/trampoline.S:16），然后是<code>usertrap</code>（kernel/trap.c:37）；返回时是<code>usertrapret</code>（kernel/trap.c:90），然后是<code>userret</code>（kernel/trampoline.S:16）。</p>
+<p>来自用户代码的trap比来自内核的trap更具挑战性，因为<code>satp</code>指向的用户页表并不映射内核，而且栈指针可能包含一个无效甚至恶意的值。</p>
+<p>因为RISC-V硬件在trap过程中不切换页表，所以用户页表必须包含<code>uservec</code>的映射，即<code>stvec</code>指向的trap处理程序地址。<code>uservec</code>必须切换<code>satp</code>，使其指向内核页表；为了在切换后继续执行指令，<code>uservec</code>必须被映射到内核页表与用户页表相同的地址。</p>
+<p>Xv6用一个包含<code>uservec</code>的trampoline页来满足这些条件。Xv6在内核页表和每个用户页表中的同一个虚拟地址上映射了trampoline页。这个虚拟地址就是<code>TRAMPOLINE</code>（如我们在图2.3和图3.3中看到的）。<code>trampoline.S</code>中包含trampoline的内容，（执行用户代码时）<code>stvec</code>设置为<code>uservec</code>（kernel/trampoline.S:16）。</p>
+<p>当<code>uservec</code>启动时，所有32个寄存器都包含被中断的代码所拥有的值。但是<code>uservec</code>需要能够修改一些寄存器，以便设置<code>satp</code>和生成保存寄存器的地址。RISC-V通过<code>sscratch</code>寄存器提供了帮助。<code>uservec</code>开始时的<code>csrrw</code>指令将<code>a0</code>和<code>sscratch</code>的内容互换。现在用户代码的<code>a0</code>被保存了；<code>uservec</code>有一个寄存器（<code>a0</code>）可以使用；<code>a0</code>包含了内核之前放在<code>sscratch</code>中的值。</p>
+<p><code>uservec</code>的下一个任务是保存用户寄存器。在进入用户空间之前，内核先设置<code>sscratch</code>指向该进程的<code>trapframe</code>，这个<code>trapframe</code>可以保存所有用户寄存器（kernel/proc.h:44）。因为<code>satp</code>仍然是指用户页表，所以<code>uservec</code>需要将<code>trapframe</code>映射到用户地址空间中。当创建每个进程时，xv6为进程的<code>trapframe</code>分配一页内存，并将它映射在用户虚拟地址<code>TRAPFRAME</code>，也就是<code>TRAMPOLINE</code>的下面。进程的<code>p-&gt;trapframe</code>也指向<code>trapframe</code>，不过是指向它的物理地址<a href="#_ftn1">[1]</a>，这样内核可以通过内核页表来使用它。</p>
+<p>因此，在交换<code>a0</code>和<code>sscratch</code>后，<code>a0</code>将指向当前进程的<code>trapframe</code>。<code>uservec</code>将在<code>trapframe</code>保存全部的寄存器，包括从<code>sscratch</code>读取的<code>a0</code>。</p>
+<p><code>trapframe</code>包含指向当前进程的内核栈、当前CPU的hartid、<code>usertrap</code>的地址和内核页表的地址的指针，<code>uservec</code>将这些值设置到相应的寄存器中，并将<code>satp</code>切换到内核页表和刷新TLB，然后调用<code>usertrap</code>。</p>
+<p><code>usertrap</code>的作用是确定trap的原因，处理它，然后返回（kernel/ trap.c:37）。如上所述，它首先改变<code>stvec</code>，这样在内核中发生的trap将由<code>kernelvec</code>处理。它保存了<code>sepc</code>（用户PC），这也是因为<code>usertrap</code>中可能会有一个进程切换，导致<code>sepc</code>被覆盖。如果trap是系统调用，<code>syscall</code>会处理它；如果是设备中断，<code>devintr</code>会处理；否则就是异常，内核会杀死故障进程。<code>usertrap</code>会把用户<code>pc</code>加4，因为RISC-V在执行系统调用时，会留下指向<code>ecall</code>指令的程序指针<a href="#ftn2">[2]</a>。在退出时，<code>usertrap</code>检查进程是否已经被杀死或应该让出CPU（如果这个trap是一个定时器中断）。</p>
+<p>回到用户空间的第一步是调用<code>usertrapret</code>（kernel/trap.c:90）。这个函数设置RISC-V控制寄存器，为以后用户空间trap做准备。这包括改变<code>stvec</code>来引用<code>uservec</code>，准备<code>uservec</code>所依赖的<code>trapframe</code>字段，并将<code>sepc</code>设置为先前保存的用户程序计数器。最后，<code>usertrapret</code>在用户页表和内核页表中映射的trampoline页上调用<code>userret</code>，因为<code>userret</code>中的汇编代码会切换页表。</p>
+<p><code>usertrapret</code>对<code>userret</code>的调用传递了参数<code>a0</code>，<code>a1</code>， <code>a0</code>指向<code>TRAPFRAME</code>，<code>a1</code>指向用户进程页表（kernel/trampoline.S:88），<code>userret</code>将<code>satp</code>切换到进程的用户页表。回想一下，用户页表同时映射了trampoline页和<code>TRAPFRAME</code>，但没有映射内核的其他内容。同样，事实上，在用户页表和内核页表中，trampoline页被映射在相同的虚拟地址上，这也是允许<code>uservec</code>在改变<code>satp</code>后继续执行的原因。<code>userret</code>将<code>trapframe</code>中保存的用户<code>a0</code>复制到<code>sscratch</code>中，为以后与<code>TRAPFRAME</code>交换做准备。从这时开始，<code>userret</code>能使用的数据只有寄存器内容和<code>trapframe</code>的内容。接下来<code>userret</code>从trapframe中恢复保存的用户寄存器，对<code>a0</code>和<code>sscratch</code>做最后的交换，恢复用户<code>a0</code>并保存<code>TRAPFRAME</code>，为下一次trap做准备，并使用<code>sret</code>返回用户空间。</p>
+<h3 id="4-3-Code-Calling-system-calls"><a href="#4-3-Code-Calling-system-calls" class="headerlink" title="4.3 Code: Calling system calls"></a>4.3 Code: Calling system calls</h3><p>第2章以<code>initcode.S</code>调用<code>exec</code>系统调用结束（user/initcode.S:11）。让我们来看看用户调用是如何在内核中实现<code>exec</code>系统调用的。</p>
+<p>用户代码将<code>exec</code>的参数放在寄存器<code>a0</code>和<code>a1</code>中，并将系统调用号放在<code>a7</code>中。系统调用号与函数指针表<code>syscalls</code>数组（kernel/syscall.c:108）中的项匹配。<code>ecall</code>指令进入内核，执行<code>uservec</code>、<code>usertrap</code>，然后执行<code>syscall</code>，就像我们上面看到的那样。</p>
+<p><code>syscall</code>（kernel/syscall.c:133）从trapframe中的<code>a7</code>中得到系统调用号，并其作为索引在<code>syscalls</code>查找相应函数。对于第一个系统调用<code>exec</code>，<code>a7</code>将为<code>SYS_exec</code>（kernel/syscall.h:8），这会让<code>syscall</code>调用<code>exec</code>的实现函数<code>sys_exec</code>。</p>
+<p>当系统调用函数返回时，<code>syscall</code>将其返回值记录在<code>p-&gt;trapframe-&gt;a0</code>中。用户空间的<code>exec()</code>将会返回该值，因为RISC-V上的C调用通常将返回值放在<code>a0</code>中。系统调用返回负数表示错误，0或正数表示成功。如果系统调用号无效，<code>syscall</code>会打印错误并返回-1。</p>
+<h3 id="4-4-Code-System-call-arguments"><a href="#4-4-Code-System-call-arguments" class="headerlink" title="4.4 Code: System call arguments"></a>4.4 Code: System call arguments</h3><p>内核的系统调用实现需要找到用户代码传递的参数。因为用户代码调用系统调用的包装函数，参数首先会存放在寄存器中，这是C语言存放参数的惯例位置。内核trap代码将用户寄存器保存到当前进程的trap frame中，内核代码可以在那里找到它们。函数<code>argint</code>、<code>argaddr</code>和<code>argfd</code>从trap frame中以整数、指针或文件描述符的形式检索第n个系统调用参数。它们都调用<code>argraw</code>来获取保存的用户寄存器（kernel/syscall.c:35）。</p>
+<p>一些系统调用传递指针作为参数，而内核必须使用这些指针来读取或写入用户内存。例如，<code>exec</code>系统调用会向内核传递一个指向用户空间中的字符串的指针数组。这些指针带来了两个挑战。首先，用户程序可能是错误的或恶意的，可能会传递给内核一个无效的指针或一个旨在欺骗内核访问内核内存而不是用户内存的指针。第二，xv6内核页表映射与用户页表映射不一样，所以内核不能使用普通指令从用户提供的地址加载或存储。</p>
+<p>内核实现了安全地将数据复制到用户提供的地址或从用户提供的地址复制数据的函数。例如<code>fetchstr</code>（kernel/syscall.c:25）。文件系统调用，如<code>exec</code>，使用<code>fetchstr</code>从用户空间中检索字符串文件名参数。<code>fetchstr</code>调用<code>copyinstr</code>来做这些困难的工作。</p>
+<p><code>copyinstr</code>（kernel/vm.c:406）将用户页表<code>pagetable</code>中的虚拟地址<code>srcva</code>复制到<code>dst</code>，需指定最大复制字节数。它使用<code>walkaddr</code>（调用<code>walk</code>函数）在软件中模拟分页硬件的操作，以确定<code>srcva</code>的物理地址<code>pa0</code>。<code>walkaddr</code>（kernel/vm.c:95）检查用户提供的虚拟地址是否是进程用户地址空间的一部分，所以程序不能欺骗内核读取其他内存。类似的函数<code>copyout</code>，可以将数据从内核复制到用户提供的地址。</p>
+<h3 id="4-5-Traps-from-kernel-space"><a href="#4-5-Traps-from-kernel-space" class="headerlink" title="4.5 Traps from kernel space"></a>4.5 Traps from kernel space</h3><p>Xv6根据用户还是内核代码正在执行，对CPU陷阱寄存器的配置略有不同行为。当内核在CPU上执行时，内核将<code>stvec</code>指向<code>kernelvec</code>上的汇编代码（kernel/kernelvec.S:10）。由于xv6已经在内核中，<code>kernelvec</code>可以使用<code>satp</code>，将其设置为内核页表，以及引用有效内核的堆栈指针。<code>kernelvec</code>保存所有寄存器，以便中断的代码最后可以在没有中断的情况下恢复。</p>
+<p><code>kernelvec</code>将寄存器保存在中断内核线程的堆栈上，因为寄存器值属于该线程，这是合理的。如果trap导致切换到另一个线程—在这种情况下，trap将实际返回到新线程的栈上，将中断线程保存的寄存器安全地保留在其堆栈上。</p>
+<p><code>kernelvec</code>在保存寄存器后跳转到<code>kerneltrap</code>（kernel/trap.c:134）。<code>kerneltrap</code>是为两种类型的陷阱准备的：设备中断和异常。它调用<code>devintr</code>（kernel/trap.c:177）来检查和处理前者。如果trap不是设备中断，那么它必须是异常，如果它发生在xv6内核中，则一定是一个致命错误；内核调用<code>panic</code>并停止执行。</p>
+<p>如果由于计时器中断而调用了<code>kerneltrap</code>，并且进程的内核线程正在运行（而不是调度程序线程），<code>kerneltrap</code>调用<code>yield</code>让出CPU，允许其他线程运行。在某个时刻，其中一个线程将退出，并让我们的线程及其<code>kerneltrap</code>恢复。第7章解释了线程让出CPU控制权。</p>
+<p>当<code>kerneltrap</code>的工作完成时，它需要返回到被中断的代码。因为<code>yield</code>可能破坏保存的<code>sepc</code>和在<code>sstatus</code>中保存的之前的模式。<code>kerneltrap</code>在启动时保存它们。它现在恢复那些控制寄存器并返回到<code>kernelvec</code>（kernel/kernelvec.S:48）。<code>kernelvec</code>从堆栈恢复保存的寄存器并执行<code>sret</code>，<code>sret</code>将<code>sepc</code>复制到<code>pc</code>并恢复中断的内核代码。</p>
+<p>可以思考一下，如果因为时间中断，<code>kerneltrap</code>调用了<code>yield</code>，trap return是如何发生的。</p>
+<p>当CPU从用户空间进入内核时，Xv6将CPU的<code>stvec</code>设置为<code>kernelvec</code>；可以在<code>usertrap</code>（kernel/trap.c:29）中看到这一点。内核运行但<code>stvec</code>被设置为<code>uservec</code>时，这期间有一个时间窗口，在这个窗口期，禁用设备中断是至关重要的。幸运的是，RISC-V总是在开始使用trap时禁用中断，xv6在设置<code>stvec</code>之前不会再次启用它们。</p>
+<h3 id="4-6-Page-fault-exceptions"><a href="#4-6-Page-fault-exceptions" class="headerlink" title="4.6 Page-fault exceptions"></a>4.6 Page-fault exceptions</h3><p>Xv6对异常的响应是相当固定：如果一个异常发生在用户空间，内核就会杀死故障进程。如果一个异常发生在内核中，内核就会<strong>panic</strong>。真正的操作系统通常会以更有趣的方式进行响应。</p>
+<p>举个例子，许多内核使用页面故障来实现<strong><em>写时复制（copy-on-write，cow）</em>fork</strong>。要解释写时复制fork，可以想一想xv6的<code>fork</code>，在第3章中介绍过。<code>fork</code>通过调用<code>uvmcopy</code>（kernel/vm.c:309）为子进程分配物理内存，并将父进程的内存复制到子程序中，使子进程拥有与父进程相同的内存内容。如果子进程和父进程能够共享父进程的物理内存，效率会更高。然而，直接实现这种方法是行不通的，因为父进程和子进程对共享栈和堆的写入会中断彼此的执行。</p>
+<p>通过使用写时复制fork，可以让父进程和子进程安全地共享物理内存，通过页面故障来实现。当CPU不能将虚拟地址翻译成物理地址时，CPU会产生一个页面故障异常（page-fault exception）。 RISC-V有三种不同的页故障：load页故障（当加载指令不能翻译其虚拟地址时）、stote页故障（当存储指令不能翻译其虚拟地址时）和指令页故障（当指令的地址不能翻译时）。<code>scause</code>寄存器中的值表示页面故障的类型，<code>stval</code>寄存器中包含无法翻译的地址。</p>
+<p><strong><em>COW</em></strong>  fork中的基本设计是父进程和子进程最初共享所有的物理页面，但将它们映射设置为只读。因此，当子进程或父进程执行store指令时，RISC-V CPU会引发一个页面故障异常。作为对这个异常的响应，内核会拷贝一份包含故障地址的页。然后将一个副本的读/写映射在子进程地址空间，另一个副本的读/写映射在父进程地址空间。更新页表后，内核在引起故障的指令处恢复故障处理。因为内核已经更新了相关的PTE，允许写入，所以现在故障指令将正常执行。</p>
+<p>这个COW设计对<code>fork</code>很有效，因为往往子程序在fork后立即调用exec，用新的地址空间替换其地址空间。在这种常见的情况下，子程序只会遇到一些页面故障，而内核可以避免进行完整的复制。此外，COW fork是透明的：不需要对应用程序进行修改，应用程序就能受益。</p>
+<p>页表和页故障的结合，将会有更多种有趣的可能性的应用。另一个被广泛使用的特性叫做<strong><em>懒分配 (lazy allocation)</em></strong>，它有两个部分。首先，当一个应用程序调用<code>sbrk</code>时，内核会增长地址空间，但在页表中把新的地址标记为无效。第二，当这些新地址中的一个出现页面故障时，内核分配物理内存并将其映射到页表中。由于应用程序经常要求获得比他们需要的更多的内存，所以懒分配是一个胜利：内核只在应用程序实际使用时才分配内存。像COW fork一样，内核可以对应用程序透明地实现这个功能。</p>
+<p>另一个被广泛使用的利用页面故障的功能是从<strong><em>磁盘上分页(paging from disk)</em></strong>。如果应用程序需要的内存超过了可用的物理RAM，内核可以交换出一些页：将它们写入一个存储设备，比如磁盘，并将其PTE标记为无效。如果一个应用程序读取或写入一个被换出到磁盘的页，CPU将遇到一个页面故障。内核就可以检查故障地址。如果该地址属于磁盘上的页面，内核就会分配一个物理内存的页面，从磁盘上读取页面到该内存，更新PTE为有效并引用该内存，然后恢复应用程序。为了给该页腾出空间，内核可能要交换另一个页。这个特性不需要对应用程序进行任何修改，如果应用程序具有引用的位置性（即它们在任何时候都只使用其内存的一个子集），这个特性就能很好地发挥作用。</p>
+<p>其他结合分页和分页错误异常的功能包括自动扩展堆栈和内存映射文件。</p>
+<h3 id="4-7-Real-world"><a href="#4-7-Real-world" class="headerlink" title="4.7 Real world"></a>4.7 Real world</h3><p>如果将内核内存映射到每个进程的用户页表中（使用适当的PTE权限标志），就不需要特殊的trampoline页了。这也将消除从用户空间trap进入内核时对页表切换的需求。这也可以让内核中的系统调用实现利用当前进程的用户内存被映射的优势，让内核代码直接去间接引用（对地址取值）用户指针。许多操作系统已经使用这些想法来提高效率。Xv6没有实现这些想法，以减少由于无意使用用户指针而导致内核出现安全漏洞的机会，并减少一些复杂性，以确保用户和内核虚拟地址不重叠。</p>
+<h3 id="4-8-Exercises"><a href="#4-8-Exercises" class="headerlink" title="4.8 Exercises"></a>4.8 Exercises</h3><ol>
+<li>函数<code>copyin</code>和<code>copyinstr</code>在软件中walk用户页表。设置内核页表，使内核拥有用户程序的内存映射，<code>copyin</code>和<code>copyinstr</code>可以使用<code>memcpy</code>将系统调用参数复制到内核空间，依靠硬件来完成页表的walk。</li>
+<li>实现内存的懒分配。</li>
+<li>实现写时复制 fork。</li>
+</ol>
+<hr>
+<ol>
+<li><p><a name="ftn1"></a>内核中物理地址和虚拟地址时直接映射的，所以可以在启用分页时，通过物理地址访问。</p>
+</li>
+<li><p><a name="ftn2"></a>执行系统调用时，进程的pc会指向ecall指令，这里需要加4清除，因为进程栈的地址空间是从高到低。</p>
+</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://kilogrand.gitee.io">kiloGrand</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://kilogrand.gitee.io/2022/08/31/xv6-Chapter-4/">https://kilogrand.gitee.io/2022/08/31/xv6-Chapter-4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://kilogrand.gitee.io" target="_blank">kiloGrand</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/xv6/">xv6</a></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/08/31/xv6-Chapter-3/"><img class="prev-cover" src="/img/coding.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">xv6 第三章</div></div></a></div><div class="next-post pull-right"><a href="/2022/08/31/xv6-Chapter-5/"><img class="next-cover" src="/img/coding.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">xv6 第五章</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/08/31/xv6-Chapter-1/" title="xv6 第一章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第一章</div></div></a></div><div><a href="/2022/08/31/xv6-Chapter-2/" title="xv6 第二章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第二章</div></div></a></div><div><a href="/2022/08/31/xv6-Chapter-3/" title="xv6 第三章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第三章</div></div></a></div><div><a href="/2022/08/31/xv6-Chapter-5/" title="xv6 第五章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第五章</div></div></a></div><div><a href="/2022/08/31/xv6-Chapter-7/" title="xv6 第七章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第七章</div></div></a></div><div><a href="/2022/08/31/xv6-Chapter-6/" title="xv6 第六章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第六章</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/profile.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">kiloGrand</div><div class="author-info__description">coder && data-science researcher</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kiloGrand/"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E9%99%B7%E9%98%B1%E5%92%8C%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8"><span class="toc-number">1.</span> <span class="toc-text">第四章：陷阱和系统调用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-RISC-V-trap-machinery"><span class="toc-number">1.1.</span> <span class="toc-text">4.1 RISC-V trap machinery</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-Traps-from-user-space"><span class="toc-number">1.2.</span> <span class="toc-text">4.2 Traps from user space</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-Code-Calling-system-calls"><span class="toc-number">1.3.</span> <span class="toc-text">4.3 Code: Calling system calls</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-Code-System-call-arguments"><span class="toc-number">1.4.</span> <span class="toc-text">4.4 Code: System call arguments</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-Traps-from-kernel-space"><span class="toc-number">1.5.</span> <span class="toc-text">4.5 Traps from kernel space</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-6-Page-fault-exceptions"><span class="toc-number">1.6.</span> <span class="toc-text">4.6 Page-fault exceptions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-7-Real-world"><span class="toc-number">1.7.</span> <span class="toc-text">4.7 Real world</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-8-Exercises"><span class="toc-number">1.8.</span> <span class="toc-text">4.8 Exercises</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/31/xv6-Chapter-9/" title="xv6 第九章">xv6 第九章</a><time datetime="2022-08-31T01:41:10.000Z" title="发表于 2022-08-31 09:41:10">2022-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/31/xv6-Chapter-8/" title="xv6 第八章">xv6 第八章</a><time datetime="2022-08-31T00:41:10.000Z" title="发表于 2022-08-31 08:41:10">2022-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/31/xv6-Chapter-7/" title="xv6 第七章">xv6 第七章</a><time datetime="2022-08-30T23:41:10.000Z" title="发表于 2022-08-31 07:41:10">2022-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/31/xv6-Chapter-6/" title="xv6 第六章">xv6 第六章</a><time datetime="2022-08-30T22:41:10.000Z" title="发表于 2022-08-31 06:41:10">2022-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/31/xv6-Chapter-5/" title="xv6 第五章">xv6 第五章</a><time datetime="2022-08-30T21:41:10.000Z" title="发表于 2022-08-31 05:41:10">2022-08-31</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By kiloGrand</div><div class="footer_custom_text">Hi, welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

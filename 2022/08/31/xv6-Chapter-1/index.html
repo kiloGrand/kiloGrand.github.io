@@ -1,0 +1,369 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>xv6 第一章 | kiloGrand</title><meta name="keywords" content="xv6"><meta name="author" content="kiloGrand"><meta name="copyright" content="kiloGrand"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="第一章：操作系统接口   操作系统的工作是将计算机的资源在多个程序间共享，并且给程序提供一系列比硬件本身支持的更有用的服务。操作系统管理并抽象底层硬件，因此，举例来说，一个文字处理程序不需要去关心自己使用的是何种硬盘。操作系统还对硬件进行多路复用，使多个程序可以同时运行的(或者看起来是同时运行)。最后，操作系统为程序提供了一种可控的交互方式，使得多个程序可以共享数据，共同工作。 ​    操作系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xv6 第一章">
+<meta property="og:url" content="https://kilogrand.gitee.io/2022/08/31/xv6-Chapter-1/index.html">
+<meta property="og:site_name" content="kiloGrand">
+<meta property="og:description" content="第一章：操作系统接口   操作系统的工作是将计算机的资源在多个程序间共享，并且给程序提供一系列比硬件本身支持的更有用的服务。操作系统管理并抽象底层硬件，因此，举例来说，一个文字处理程序不需要去关心自己使用的是何种硬盘。操作系统还对硬件进行多路复用，使多个程序可以同时运行的(或者看起来是同时运行)。最后，操作系统为程序提供了一种可控的交互方式，使得多个程序可以共享数据，共同工作。 ​    操作系统">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kilogrand.gitee.io/img/coding.jpg">
+<meta property="article:published_time" content="2022-08-30T17:41:10.000Z">
+<meta property="article:modified_time" content="2022-09-02T05:12:03.733Z">
+<meta property="article:author" content="kiloGrand">
+<meta property="article:tag" content="xv6">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kilogrand.gitee.io/img/coding.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kilogrand.gitee.io/2022/08/31/xv6-Chapter-1/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'xv6 第一章',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-09-02 13:12:03'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/profile.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/coding.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">kiloGrand</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">xv6 第一章</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-08-30T17:41:10.000Z" title="发表于 2022-08-31 01:41:10">2022-08-31</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-09-02T05:12:03.733Z" title="更新于 2022-09-02 13:12:03">2022-09-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">7.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>25分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="xv6 第一章"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="第一章：操作系统接口"><a href="#第一章：操作系统接口" class="headerlink" title="第一章：操作系统接口"></a>第一章：操作系统接口</h2><p>   操作系统的工作是将计算机的资源在多个程序间共享，并且给程序提供一系列比硬件本身支持的更有用的服务。操作系统管理并抽象底层硬件，因此，举例来说，一个文字处理程序不需要去关心自己使用的是何种硬盘。操作系统还对硬件进行多路复用，使多个程序可以同时运行的(或者看起来是同时运行)。最后，操作系统为程序提供了一种可控的交互方式，使得多个程序可以共享数据，共同工作。</p>
+<p>​    操作系统通过接口向用户程序提供服务。设计一个好的接口实际上是很困难的。一方面，我们希望接口简单和精准，这样它就容易正确地实现；另一方面，我们可能又想为应用提供许多更加复杂的功能。解决这种矛盾的诀窍是让接口的设计依赖于一些<em>机制</em> (<em>mechanism)</em>，并通过这些机制的组合来提供通用性。</p>
+<p>​    本书以一个操作系统为例，来说明操作系统的概念。这个操作系统就是xv6，它提供了在Ken Thompson和Dennis Ritchie的Unix操作系统[14]中引入的基本接口，同时也模仿了Unix的内部设计。Unix提供了一个机制组合得非常良好的窄接口，具有惊人的通用性。这样的接口设计非常成功，这也使得BSD，Linux，Mac OS X，Solaris这样的现代操作系统，甚至Windows都有类似Unix的接口。理解xv6是理解这些操作系统的一个良好起点。</p>
+<p>​    如图1.1所示，xv6使用了传统形式的<strong>内核</strong>——一个向其他运行中的程序提供服务的特殊程序。每一个正在运行的程序（称为<strong>进程</strong>），都拥有自己的包含指令、数据、栈的内存空间。指令实现程序的运算，数据是用于运算过程的变量，栈则管理程序的过程调用。一台计算机通常有许多进程，但只有一个内核。</p>
+<p><img src="/img/Figure-1.1.png" alt="Figure-1.1"></p>
+<p>​    当一个进程需要调用一个内核服务时，它就会调用<strong>系统调用</strong>，这是操作系统接口中的一个调用。系统调用会进入内核，让内核执行服务然后返回。所以进程会在用户空间和内核空间之间交替运行。</p>
+<p>​    内核使用CPU<a href="#ftn1">[1]</a>提供的硬件保护机制来确保在用户空间中执行的每个进程只能访问自己的内存。内核运行时拥有硬件特权，可以访问这些受到保护的资源，而用户程序运行时则没有这些特权。当用户程序调用系统调用时，硬件提高特权级别并开始执行内核中预定义的函数。</p>
+<p>内核提供的系统调用集合就是用户程序可见的接口。xv6内核提供了传统Unix内核所提供的服务和系统调用的一个子集。图1.2列出了xv6的所有系统调用。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>系统调用</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>int fork()</strong></td>
+<td>创建一个进程，返回子进程的PID。</td>
+</tr>
+<tr>
+<td><strong>int exit(int status)</strong></td>
+<td>终止当前进程，并将status传递给wait()。不会返回。</td>
+</tr>
+<tr>
+<td><strong>int wait(int *status)</strong></td>
+<td>等待子进程结束，并将status接收到参数*status中，返回其PID。</td>
+</tr>
+<tr>
+<td><strong>int kill(int pid)</strong></td>
+<td>终止给定PID的进程，成功返回0，失败返回-1。</td>
+</tr>
+<tr>
+<td><strong>int getpid()</strong></td>
+<td>返回当前进程的PID。</td>
+</tr>
+<tr>
+<td><strong>int sleep(int n)</strong></td>
+<td>睡眠n个时钟周期。</td>
+</tr>
+<tr>
+<td><strong>int exec(char *file, char *argv[])</strong></td>
+<td>通过给定参数加载并执行一个文件；只在错误时返回。</td>
+</tr>
+<tr>
+<td><strong>char *sbrk(int n)</strong></td>
+<td>使进程内存增加n字节，返回新内存的起始地址。</td>
+</tr>
+<tr>
+<td><strong>int open(char *file, int flags)</strong></td>
+<td>打开一个文件，flags表示读或写，返回fd（文件描述符）。</td>
+</tr>
+<tr>
+<td><strong>int write(int fd, char *buf, int n)</strong></td>
+<td>将buf中n字节写入到文件描述符中；返回n。</td>
+</tr>
+<tr>
+<td><strong>int read(int fd, char *buf, int n)</strong></td>
+<td>从文件描述符中读取n字节到buf；返回读取字节数，文件结束返回0。</td>
+</tr>
+<tr>
+<td><strong>int close(int fd)</strong></td>
+<td>释放文件描述符fd。</td>
+</tr>
+<tr>
+<td><strong>int dup(int fd)</strong></td>
+<td>返回一个新文件描述符，其引用与fd相同的文件。</td>
+</tr>
+<tr>
+<td><strong>int pipe(int p[])</strong></td>
+<td>创建管道，将读/写文件描述符放置在p[0]和p[1]。</td>
+</tr>
+<tr>
+<td><strong>int chdir(char *dir)</strong></td>
+<td>改变当前目录。</td>
+</tr>
+<tr>
+<td><strong>int mkdir(char *dir)</strong></td>
+<td>创建新目录。</td>
+</tr>
+<tr>
+<td><strong>int mknod(char *file, int, int)</strong></td>
+<td>创建新设备文件。</td>
+</tr>
+<tr>
+<td><strong>int fstat(int fd, struct stat *st)</strong></td>
+<td>将打开的文件的信息放置在*st中。</td>
+</tr>
+<tr>
+<td><strong>int stat(char *file, struct stat *st)</strong></td>
+<td>将命名文件信息放置在*st中。</td>
+</tr>
+<tr>
+<td><strong>int link(char *file1, char * file2)</strong></td>
+<td>为文件file1创建一个新的名称(file2)。</td>
+</tr>
+<tr>
+<td><strong>int unlink(char *file)</strong></td>
+<td>移除一个文件。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>图1.2  xv6系统调用. 如果没有特别说明, 这些调用成功时返回0，失败时返回-1。</p>
+<p>​    </p>
+<p>​    本章剩下的部分概述了xv6的服务的概貌——进程、内存、文件描述符、管道和文件系统，并通过代码片段对其进行了说明，然后讨论了<strong>shell</strong>（Unix的命令行用户接口）中是如何使用它们的。这些系统调用在shell中的应用说明了系统调用的设计如何精巧。</p>
+<p>​    shell是一个普通的程序，它从用户读取命令并执行它们。shell是一个用户程序，而不是内核的一部分，这一事实说明了系统调用接口的强大：shell没有什么特别之处。这也意味着shell是很容易被替换的;因此，事实上现代Unix系统中有各种各样的shell，每个都有自己的用户界面和脚本特性。xv6 shell是Unix Bourne shell的一个简单实现。它的实现可以在（<code>user/sh.c:1</code>）找到。</p>
+<h3 id="1-1-Processes-and-memory-1-1-进程和内存"><a href="#1-1-Processes-and-memory-1-1-进程和内存" class="headerlink" title="1.1 Processes and memory[1.1 进程和内存]"></a>1.1 Processes and memory[1.1 进程和内存]</h3><p>一个xv6进程由用户空间内存（指令、数据和堆栈）和内核私有的进程状态组成。Xv6对进程提供<strong>分时</strong>特性：它透明地切换当前cpu正在执行的进程。当一个进程暂时不使用cpu时，xv6会保存它的CPU寄存器，在下次运行该进程时恢复它们。内核为每个进程关联一个<strong>PID</strong>(进程标识符)。</p>
+<p> 可以使用<strong>fork</strong>系统调用创建一个新的进程。<strong>fork</strong>创建的新进程被称为<strong>子进程</strong>，其内存内容与调用的进程完全相同，原进程被称为<strong>父进程</strong>。在父进程和子进程中，fork都会返回。在父进程中，fork返回子进程的PID；在子进程中，fork返回0。例如，考虑以下用C编程语言编写的程序片段[6]。</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span>* pid = fork();</span><br><span class="line"><span class="keyword">if</span> (pid &gt; <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;parent: child=%d\n&quot;</span>, pid);</span><br><span class="line">	pid = wait((*<span class="type">int</span>* *)<span class="number">0</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;child %d is done\n&quot;</span>, pid);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;child: exiting\n&quot;</span>);</span><br><span class="line">	<span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;fork error\n&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​    <strong>exit</strong>系统调用会使得调用它的进程退出，并释放资源，例如内存和打开的文件。<strong>exit</strong>需要一个整数状态参数，通常0表示成功，1表示失败。<strong>wait</strong>系统调用返回当前进程的一个已退出（或被杀死）的子进程的PID，并将该子进程的退出状态码复制到一个地址，该地址由wait参数提供；如果调用者的子进程都没有退出，则<strong>wait</strong>等待一个子进程退出。如果调用者没有子进程，wait立即返回-1。如果父进程不关心子进程的退出状态，可以传递一个0地址给wait。</p>
+<p>​    在上面的例子中，输出为:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">parent: child=1234</span><br><span class="line">child: exiting</span><br></pre></td></tr></table></figure>
+<p>可能会以任何一种顺序输出，这取决于是父进程还是子进程先执行它的<strong>printf</strong>调用。在子程序退出后，父进程的<strong>wait</strong>返回，父进程打印：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">child 1234 is done</span><br></pre></td></tr></table></figure>
+<p>虽然子进程最初与父进程拥有相同的内存内容，但父进程和子进程是在不同的内存和不同的寄存器中执行的：改变其中一个进程中的变量不会影响另一个进程。例如，当<strong>wait</strong>的返回值存储到父进程的<strong>pid</strong>变量中时，并不会改变子进程中的变量<strong>pid</strong>。子进程中的<strong>pid</strong>值仍然为零。</p>
+<p><strong>exec</strong>系统调用使用新内存映像来替换进程的内存， 新内存映像从文件系统中的文件中进行读取。这个文件必须有特定的格式，它指定了文件中哪部分存放指令，哪部分是数据，在哪条指令开始，等等。xv6使用ELF格式，第3章将详细讨论。当<strong>exec</strong>成功时，它并不返回到调用程序；相反，从文件中加载的指令在ELF头声明的入口点开始执行。<strong>exec</strong>需要两个参数：包含可执行文件的文件名和一个字符串参数数组。例如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span>* *argv[<span class="number">3</span>];</span><br><span class="line">argv[<span class="number">0</span>] = <span class="string">&quot;echo&quot;</span>;</span><br><span class="line">argv[<span class="number">1</span>] = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">argv[<span class="number">2</span>] = <span class="number">0</span>;</span><br><span class="line">exec(<span class="string">&quot;/bin/echo&quot;</span>, argv);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;exec error\n&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>  上述代码会执行/bin/echo程序，并将argv数组作为参数。大多数程序都会忽略参数数组的第一个元素，也就是程序名称。</p>
+<p>xv6 shell使用上述调用来在用户空间运行程序。shell的主结构很简单，参见<strong>main</strong>(user/sh.c:145)。主循环用<strong>getcmd</strong>读取用户的一行输入，然后调用<strong>fork</strong>，创建shell副本。父进程调用wait，而子进程则运行命令。例如，如果用户向shell输入了<strong>echo hello</strong>，那么就会调用<strong>runcmd</strong>，参数为<strong>echo hello</strong>。<strong>runcmd</strong> (user/sh.c:58) 运行实际的命令。对于<strong>echo hello</strong>，它会调用<strong>exec</strong> (user/sh.c:78)。如果<strong>exec</strong>成功，那么子进程将执行echo程序的指令，而不是<strong>runcmd</strong>的。在某些时候，<strong>echo</strong>会调用<strong>exit</strong>，这将使父程序从main(user/sh.c:145)中的<strong>wait</strong>返回。</p>
+<p> 你可能会奇怪为什么<strong>fork</strong>和<strong>exec</strong>没有结合在一次调用中，我们后面会看到shell在实现I/O重定向时利用了这种分离的特性。为了避免创建相同进程并立即替换它（使用exec）所带来的浪费，内核通过使用虚拟内存技术（如copy-on-write）来优化这种用例的fork实现（见4.6节）。</p>
+<p>Xv6隐式分配大部分用户空间内存：<strong>fork</strong>复制父进程的内存到子进程，<strong>exec</strong>分配足够的内存来容纳可执行文件。一个进程如果在运行时需要更多的内存（可能是为了<strong>malloc</strong>），可以调用sbrk(n)将其数据内存增长n个字节；sbrk返回新内存的位置。</p>
+<h3 id="1-2-I-O-and-File-descriptors-1-2-I-O-和文件描述符"><a href="#1-2-I-O-and-File-descriptors-1-2-I-O-和文件描述符" class="headerlink" title="1.2 I/O and File descriptors[1.2 I/O 和文件描述符]"></a>1.2 I/O and File descriptors[1.2 I/O 和文件描述符]</h3><p><strong>文件描述符</strong>是一个小整数，代表一个可由进程读取或写入的内核管理对象。一个进程可以通过打开一个文件、目录、设备，或者通过创建一个管道，或者通过复制一个现有的描述符来获得一个文件描述符。为了简单起见，我们通常将文件描述符所指向的对象称为文件；文件描述符接口将文件、管道和设备之间的差异抽象化，使它们看起来都像字节流。我们把输入和输出称为<strong>I/O</strong>。</p>
+<p>在内部，xv6内核为每一个进程单独维护一个以文件描述符为索引的表，因此每个进程都有一个从0开始的文件描述符私有空间。按照约定，一个进程从文件描述符0(标准输入)读取数据，向文件描述符1(标准输出)写入输出，向文件描述符2(标准错误)写入错误信息。正如我们将看到的那样，shell利用这个约定来实现I/O重定向和管道。shell确保自己总是有三个文件描述符打开（user/sh.c:151），这些文件描述符默认是控制台的文件描述符。</p>
+<p><strong>read</strong>/<strong>write</strong>系统调用可以从文件描述符指向的文件读写数据。调用<strong>read(fd, buf, n)</strong>从文件描述符<strong>fd</strong>中读取不超过<strong>n</strong>个字节的数据，将它们复制到<strong>buf</strong>中，并返回读取的字节数。每个引用文件的文件描述符都有一个与之相关关联偏移量。<strong>read</strong>从当前文件偏移量中读取数据，然后按读取的字节数推进偏移量，随后的<strong>read</strong>将返回上次读取之后的数据。当没有更多的字节可读时，读返回零，表示文件结束。</p>
+<p><strong>write(fd, buf, n)</strong>表示将<strong>buf</strong>中的<strong>n</strong>个字节写入文件描述符<strong>fd</strong>中，并返回写入的字节数。若写入字节数小于n则该次写入发生错误。和<strong>read</strong>一样，<strong>write</strong>在当前文件偏移量处写入数据，然后按写入的字节数将偏移量向前推进：每次<strong>write</strong>都从上一次写入的地方开始。</p>
+<p>下面的程序片段(程序<strong>cat</strong>的核心代码)将数据从其标准输入复制到其标准输出。如果出现错误，它会向标准错误写入一条消息。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> buf[<span class="number">512</span>];</span><br><span class="line"><span class="type">int</span> n;</span><br><span class="line"><span class="keyword">for</span> (;;)</span><br><span class="line">&#123;</span><br><span class="line">    n = read(<span class="number">0</span>, buf, <span class="keyword">sizeof</span> buf);</span><br><span class="line">    <span class="keyword">if</span> (n == <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">if</span> (n &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;read error\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (write(<span class="number">1</span>, buf, n) != n)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;write error\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这个代码片段中，需要注意的是，<strong>cat</strong>不知道它是从文件、控制台还是管道中读取的。同样，<strong>cat</strong>也不知道它是在打印到控制台、文件还是其他什么地方。文件描述符的使用和0代表输入，1代表输出的约定，使得<strong>cat</strong>可以很容易实现。</p>
+<p><strong>close</strong>系统调用会释放一个文件描述符，使它可以被以后的<strong>open</strong>、<strong>pipe</strong>或<strong>dup</strong>系统调用所重用（见下文）。新分配的文件描述符总是当前进程中最小的未使用描述符。</p>
+<p>文件描述符和<strong>fork</strong>相互作用，使I/O重定向易于实现。<strong>fork</strong>将父进程的文件描述符表和它的内存一起复制，这样子进程开始时打开的文件和父进程完全一样。系统调用<strong>exec</strong>替换调用进程的内存，但会保留文件描述符表。这种行为允许shell通过<strong>fork</strong>实现I/O重定向，在子进程中重新打开所选的文件描述符，然后调用<strong>exec</strong>运行新程序。下面是shell运行<strong>cat &lt; input.txt</strong>命令的简化版代码。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> *argv[<span class="number">2</span>];</span><br><span class="line">argv[<span class="number">0</span>] = <span class="string">&quot;cat&quot;</span>;</span><br><span class="line">argv[<span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">if</span> (fork() == <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">    close(<span class="number">0</span>);  <span class="comment">// 释放标准输入的文件描述符</span></span><br><span class="line">    open(<span class="string">&quot;input.txt&quot;</span>, O_RDONLY);  <span class="comment">// 这时input.txt的文件描述符为0</span></span><br><span class="line">    <span class="comment">// 即标准输入为input.txt</span></span><br><span class="line">    exec(<span class="string">&quot;cat&quot;</span>, argv);  <span class="comment">// cat从0读取，并输出到1，见上个代码段</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在子进程关闭文件描述符0后，<strong>open</strong>保证对新打开的<strong>input.txt</strong>使用该文件描述符0。因为此时0将是最小的可用文件描述符。然后<strong>cat</strong>执行时，文件描述符0（标准输入）会指向<strong>input.txt</strong>。这不会改变父进程的文件描述符，它只会修改子进程的描述符。</p>
+<p>xv6 shell中的I/O重定向代码正是以这种方式工作的（user/sh.c:82）。回想一下shell的代码，shell已经<strong>fork</strong>子shell，<strong>runcmd</strong>将调用<strong>exec</strong>来加载新的程序。</p>
+<p><strong>open</strong>的第二个参数由一组用位表示的标志组成，用来控制<strong>open</strong>的工作。可能的值在文件控制(fcntl)头(kernel/fcntl.h:1-5)中定义。<strong>O_RDONLY,</strong> <strong>O_WRONLY,</strong> <strong>O_RDWR</strong>, <strong>O_CREATE</strong>, 和 <strong>O_TRUNC,</strong> 它们分别指定open打开文件时的功能，读、写、读和写、如果文件不存在则创建文件、将文件长度截断为0。</p>
+<p>现在应该清楚为什么<strong>fork</strong>和<strong>exec</strong>是分开调用的：在这两个调用之间，shell有机会重定向子进程的I/O，而不干扰父进程的I/O设置。我们可以假设一个由<strong>fork</strong>和<strong>exec</strong>组成的系统调用<strong>forkexec</strong>，但是用这种调用来做I/O重定向似乎很笨拙。shell在调用<strong>forkexec</strong>之前修改自己的I/O设置（然后取消这些修改），或者<strong>forkexec</strong>可以将I/O重定向的指令作为参数，或者（最糟糕的方案）每个程序（比如cat）都需要自己做I/O重定向。</p>
+<p>虽然<strong>fork</strong>复制了文件描述符表，但每个底层文件的偏移量都是父子共享的。想一想下面的代码。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">if</span> (fork() == <span class="number">0</span>)</span><br><span class="line"> &#123;</span><br><span class="line">     write(<span class="number">1</span>, <span class="string">&quot;hello &quot;</span>, <span class="number">6</span>);</span><br><span class="line">     <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line"> &#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    wait(<span class="number">0</span>);</span><br><span class="line">    write(<span class="number">1</span>, <span class="string">&quot;world\n&quot;</span>, <span class="number">6</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这个片段的最后，文件描述符1所引用的文件将包含数据hello world。父进程中的<strong>write</strong>（由于有了<strong>wait</strong>，只有在子进程结束后才会运行）会从子进程的<strong>write</strong>结束的地方开始。这种行为有助于从shell命令的序列中产生有序的输出，比如<strong>(echo hello; echo world) &gt;output.txt</strong>。</p>
+<p><strong>dup</strong>系统调用复制一个现有的文件描述符，返回一个新的描述符，它指向同一个底层I/O对象。两个文件描述符共享一个偏移量，就像被<strong>fork</strong>复制的文件描述符一样。这是将hello world写进文件的另一种方法。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fd = dup(<span class="number">1</span>);</span><br><span class="line">write(<span class="number">1</span>, <span class="string">&quot;hello &quot;</span>, <span class="number">6</span>);</span><br><span class="line">write(fd, <span class="string">&quot;world\n&quot;</span>, <span class="number">6</span>);</span><br></pre></td></tr></table></figure>
+<p>如果两个文件描述符是通过一系列的<strong>fork</strong>和<strong>dup</strong>调用从同一个原始文件描述符衍生出来的，那么这两个文件描述符共享一个偏移量。否则，文件描述符不共享偏移量，即使它们是由同一个文件的打开调用产生的。<strong>dup</strong>允许shell实现这样的命令：l<strong>s existing-file non-existing-file &gt; tmp1 2&gt;&amp;1</strong>。2&gt;&amp;1表示2是1的复制（<strong>dup(1)</strong>），即重定向错误信息到标准输出，已存在文件的名称和不存在文件的错误信息都会显示在文件tmp1中。xv6 shell不支持错误文件描述符的I/O重定向，但现在你知道如何实现它了。</p>
+<p>文件描述符是一个强大的抽象，因为它们隐藏了它们连接的细节：一个向文件描述符1写入的进程可能是在向一个文件、控制台等设备或向一个管道写入。</p>
+<h3 id="1-3-Pipes-1-3-管道"><a href="#1-3-Pipes-1-3-管道" class="headerlink" title="1.3 Pipes[1.3 管道]"></a>1.3 Pipes[1.3 管道]</h3><p><strong>管道</strong>是一个小的内核缓冲区，作为一对文件描述符提供给进程，一个用于读，一个用于写。将数据写入管道的一端就可以从管道的另一端读取数据。管道为进程提供了一种通信方式。</p>
+<p>下面的示例代码运行程序wc，标准输入连接到管道的读取端。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> p[<span class="number">2</span>];</span><br><span class="line"><span class="type">char</span> *argv[<span class="number">2</span>];</span><br><span class="line">argv[<span class="number">0</span>] = <span class="string">&quot;wc&quot;</span>;</span><br><span class="line">argv[<span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line">pipe(p);</span><br><span class="line"><span class="keyword">if</span> (fork() == <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">    close(<span class="number">0</span>);  <span class="comment">// 释放文件描述符0</span></span><br><span class="line">    dup(p[<span class="number">0</span>]); <span class="comment">// 复制一个p[0](管道读端)，此时文件描述符0（标准输入）也引用管道读端，故改变了标准输入。</span></span><br><span class="line">    close(p[<span class="number">0</span>]);</span><br><span class="line">    close(p[<span class="number">1</span>]);</span><br><span class="line">    exec(<span class="string">&quot;/bin/wc&quot;</span>, argv); <span class="comment">// wc 从标准输入读取数据，并写入到参数中的每// 一个文件</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    close(p[<span class="number">0</span>]);</span><br><span class="line">    write(p[<span class="number">1</span>], <span class="string">&quot;hello world\n&quot;</span>, <span class="number">12</span>);</span><br><span class="line">    close(p[<span class="number">1</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>程序调用<strong>pipe</strong>，创建一个新的管道，并将读写文件描述符记录在数组<strong>p</strong>中，经过<strong>fork</strong>后，父进程和子进程的文件描述符都指向管道。子进程调用<strong>close</strong>和<strong>dup</strong>使文件描述符0引用管道的读端，并关闭p中的文件描述符，并调用<strong>exec</strong>运行<strong>wc</strong>。当<strong>wc</strong>从其标准输入端读取时，它将从管道中读取。父进程关闭管道的读端，向管道写入，然后关闭写端。</p>
+<p>如果没有数据可用，管道上的<strong>read</strong>会等待数据被写入，或者等待所有指向写端的文件描述符被关闭；在后一种情况下，读将返回0，就像数据文件的结束一样。事实上，如果没有数据写入，读会无限阻塞，直到新数据不可能到达为止（写端被关闭），这也是子进程在执行上面的<strong>wc</strong>之前关闭管道的写端很重要的一个原因：如果wc的一个文件描述符仍然引用了管道的写端，那么<strong>wc</strong>将永远看不到文件的关闭（被自己阻塞）。</p>
+<p>xv6的shell实现了管道，如<strong>grep fork sh.c | wc -l</strong>，shell的实现类似于上面的代码（user/sh.c:100）。执行shell的子进程创建一个管道来连接管道的左端和右端（去看源码，不看难懂）。然后，它在管道左端（写入端）调用<strong>fork</strong>和<strong>runcmd</strong>，在右端（读取端）调用<strong>fork</strong>和<strong>runcmd</strong>，并等待两者结束。管道的右端（读取端）可以是一个命令，也可以是包含管道的多个命令（例如，<strong>a | b | c</strong>），它又会分叉为两个新的子进程（一个是<strong>b</strong>，一个是<strong>c</strong>）。因此，shell可以创建一棵进程树。这棵树的叶子是命令，内部（非叶子）节点是等待左右子进程结束的进程。</p>
+<p>原则上，我们可以让内部节点（非叶节点）运行管道的左端，但这样的实现会更加复杂。考虑只做以下修改：修改sh.c，使其不为<strong>runcmd(p-&gt;left)</strong>  fork进程，直接递归运行<strong>runcmd(p-&gt;left)</strong>。像这样，<strong>echo hi | wc</strong>不会产生输出，因为当<strong>echo hi</strong>在<strong>runcmd</strong>中退出时，内部进程会退出，而不会调用<strong>fork</strong>来运行管道的右端。这种不正确的行为可以通过不在<strong>runcmd</strong>中为内部进程调用<strong>exit</strong>来修正，但是这种修正会使代码变得复杂：<strong>runcmd</strong>需要知道该进程是否是内部进程（非叶节点）。当不为<strong>runcmd(p-&gt;right)</strong>  <strong>fork</strong>进程时，也会出现复杂的情况。像这样的修改，<strong>sleep 10 | echo hi</strong>就会立即打印出hi，而不是10秒后，因为<strong>echo</strong>会立即运行并退出，而不是等待<strong>sleep</strong>结束。由于sh.c的目标是尽可能的简单，所以它并没有试图避免创建内部进程。</p>
+<p>管道似乎没有比临时文件拥有更多的功能：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo hello world | wc</span><br></pre></td></tr></table></figure>
+<p>不使用管道：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo hello world &gt;/tmp/xyz; wc &lt;/tmp/xyz</span><br></pre></td></tr></table></figure>
+<p>在这种情况下，管道比临时文件至少有四个优势。首先，管道会自动清理自己；如果是文件重定向，shell在完成后必须小心地删除/tmp/xyz。第二，管道可以传递任意长的数据流，而文件重定向则需要磁盘上有足够的空闲空间来存储所有数据。第三，管道可以分阶段的并行执行，而文件方式则需要在第二个程序开始之前完成第一个程序。第四，如果你要实现进程间的通信，管道阻塞读写比文件的非阻塞语义更有效率。</p>
+<h3 id="1-4-File-system-1-4-文件系统"><a href="#1-4-File-system-1-4-文件系统" class="headerlink" title="1.4 File system[1.4 文件系统]"></a>1.4 File system[1.4 文件系统]</h3><p>xv6文件系统包含了数据文件（拥有字节数组）和目录（拥有对数据文件和其他目录的命名引用）。这些目录形成一棵树，从一个被称为根目录的特殊目录开始。像<strong>/a/b/c</strong>这样的路径指的是根目录<strong>/</strong>中的<strong>a</strong>目录中的<strong>b</strong>目录中的名为<strong>c</strong>的文件或目录。不以<strong>/</strong>开头的路径是相对于调用进程的当前目录进行计算其绝对位置的，可以通过<strong>chdir</strong>系统调用来改变进程的当前目录。下面两个<strong>open</strong>打开了同一个文件（假设所有涉及的目录都存在）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">chdir(<span class="string">&quot;/a&quot;</span>);</span><br><span class="line">chdir(<span class="string">&quot;b&quot;</span>);</span><br><span class="line">open(<span class="string">&quot;c&quot;</span>, O_RDONLY);</span><br><span class="line">open(<span class="string">&quot;/a/b/c&quot;</span>, O_RDONLY);</span><br></pre></td></tr></table></figure>
+<p>前两行将进程的当前目录改为<strong>/a/b</strong>；后面两行既不引用也不改变进程的当前目录。</p>
+<p>有一些系统调用来可以创建新的文件和目录：<strong>mkdir</strong>创建一个新的目录，用<strong>open</strong>加上<strong>O_CREATE</strong>标志创建并打开一个新的数据文件，以及<strong>mknod</strong>创建一个新的设备文件。这个例子说明了这三个系统调用的使用。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mkdir(<span class="string">&quot;/dir&quot;</span>);</span><br><span class="line">fd = open(<span class="string">&quot;/dir/file&quot;</span>, O_CREATE | O_WRONLY);</span><br><span class="line">close(fd);</span><br><span class="line"></span><br><span class="line">mknod(<span class="string">&quot;/console&quot;</span>, <span class="number">1</span>, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<p><strong>mknod</strong>创建了一个引用设备的特殊文件。与设备文件相关联的是主要设备号和次要设备号(<strong>mknod</strong>的两个参数)，它们唯一地标识一个内核设备。当一个进程打开设备文件后，内核会将系统的读写调用转移到内核设备实现上，而不是将它们传递给文件系统。</p>
+<p>文件名称与文件是不同的；底层文件（非磁盘上的文件）被称为<strong>inode</strong>，一个inode可以有多个名称，称为<strong>链接</strong>。每个链接由目录中的一个项组成；该项包含一个文件名和对inode的引用。inode保存着一个文件的<strong><em>metadata\</em></strong>（元数据），包括它的类型（文件或目录或设备），它的长度，文件内容在磁盘上的位置，以及文件的链接数量。</p>
+<p><strong>fstat</strong>系统调用从文件描述符引用的inode中检索信息。它定义在<strong>stat.h</strong> (kernel/stat.h)的 <strong>stat</strong> 结构中：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> T_DIR 1    	<span class="comment">// Directory</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> T_FILE 2   	<span class="comment">// File</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> T_DEVICE 3 	<span class="comment">// Device</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">stat</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="type">int</span> dev;     	<span class="comment">// File system’s disk device</span></span><br><span class="line">    uint ino;    	<span class="comment">// Inode number</span></span><br><span class="line">    <span class="type">short</span> type;  	<span class="comment">// Type of file</span></span><br><span class="line">    <span class="type">short</span> nlink; 	<span class="comment">// Number of links to file</span></span><br><span class="line">    uint64 size; 	<span class="comment">// Size of file in bytes</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><strong>link</strong>系统调用创建了一个引用了同一个inode的文件（文件名）。下面的片段创建了引用了同一个inode两个文件a和b。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">open(<span class="string">&quot;a&quot;</span>, O_CREATE | O_WRONLY);</span><br><span class="line">link(<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>读写a与读写b是一样的，每个inode都有一个唯一的inode号来标识。经过上面的代码序列后，可以通过检查fstat的结果来确定a和b指的是同一个底层内容：两者将返回相同的inode号（<strong>ino</strong>），并且nlink计数为2。</p>
+<p><strong>unlink</strong>系统调用会从文件系统中删除一个文件名。只有当文件的链接数为零且没有文件描述符引用它时，文件的inode和存放其内容的磁盘空间才会被释放。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unlink(<span class="string">&quot;a&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>上面这行代码会删除a，此时只有b会引用inode。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fd = open(<span class="string">&quot;/tmp/xyz&quot;</span>, O_CREATE | O_RDWR);</span><br><span class="line">unlink(<span class="string">&quot;/tmp/xyz&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>这段代码是创建一个临时文件的一种惯用方式，它创建了一个无名称inode，故会在进程关闭<strong>fd</strong>或者退出时删除文件。</p>
+<p>Unix提供了shell可调用的文件操作程序，作为用户级程序，例如<strong>mkdir</strong>、<strong>ln</strong>和<strong>rm</strong>。这种设计允许任何人通过添加新的用户级程序来扩展命令行接口。现在看来，这个设计似乎是显而易见的，但在Unix时期设计的其他系统通常将这类命令内置到shell中（并将shell内置到内核中）。</p>
+<p>有一个例外，那就是cd，它是在shell中实现的 (user/sh.c:160)。cd 必须改变 shell 自身的当前工作目录。如果cd作为一个普通命令执行，那么shell就会fork一个子进程，而子进程会运行cd，cd只会改变子进程的当前工作目录。父进程（即shell）的工作目录则保持不变。</p>
+<h3 id="1-5-Real-world-1-5-现实情况"><a href="#1-5-Real-world-1-5-现实情况" class="headerlink" title="1.5 Real world[1.5 现实情况]"></a>1.5 Real world[1.5 现实情况]</h3><p>Unix将标准文件描述符、管道和方便的shell语法结合起来进行操作，是编写通用可重用程序的一大进步。这个想法引发了一种“软件工具”文化，这也是Unix强大和流行的主要原因，而shell是第一种所谓的脚本语言。Unix系统调用接口今天仍然存在于BSD、Linux和Mac OS X等操作系统中。</p>
+<p>Xv6并不符合 POSIX 标准：它缺少许多系统调用（包括基本的系统调用，如 <strong>lseek</strong>），而且它提供的许多系统调用与标准不同。我们对xv6的主要目标是简单明了，同时提供一个简单的类似UNIX的系统调用接口。一些人已经添加了一些系统调用和一个简单的C库扩展了xv6，以便运行基本的Unix程序。然而，现代内核比xv6提供了更多的系统调用和更多种类的内核服务。例如，它们支持网络、窗口系统、用户级线程、许多设备的驱动程序等等。现代内核不断快速发展，并提供了许多超越POSIX的功能。</p>
+<p>Unix用一套文件名和文件描述符接口统一了对多种类型资源（文件、目录和设备）的访问。这个思想可以扩展到更多种类的资源，一个很好的例子是Plan 9项目[13]，它把资源就是文件的概念应用到网络、图形等方面。然而，大多数Unix衍生的操作系统都没有遵循这一路线。</p>
+<p>文件系统和文件描述符已经是强大的抽象。即便如此，操作系统接口还有其他模式。Multics是Unix的前身，它以一种使文件存储看起来像内存的方式抽象了文件存储，产生了一种截然不同的接口。Multics设计的复杂性直接影响了Unix的设计者，他们试图建立一些更简单的东西。</p>
+<p>Xv6没有用户系统；用Unix的术语来说，所有的xv6进程都以root身份运行。</p>
+<p>本书研究的是xv6如何实现其类似Unix的接口，但其思想和概念不仅仅适用于Unix。任何操作系统都必须将进程复用到底层硬件上，将进程相互隔离，并提供受控进程间通信的机制。在学习了xv6之后，您应该能够研究其他更复杂的操作系统，并在这些系统中看到xv6中蕴含的基本概念。</p>
+<h3 id="1-6-Exercises-1-6-练习"><a href="#1-6-Exercises-1-6-练习" class="headerlink" title="1.6 Exercises[1.6 练习]"></a>1.6 Exercises[1.6 练习]</h3><ol>
+<li>使用UNIX的系统调用编写一个程序，通过一对管道在两个进程之间交换一个字节，每个方向各一个。以交换次数/秒为单位测量程序的性能。</li>
+</ol>
+<hr>
+<ol>
+<li><a name="ftn1"></a>本文一般用CPU中央处理单元的缩写来指代执行计算的硬件单元。其他文本(如RISC-V规范)也使用processor、core和hart等词代替CPU。</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://kilogrand.gitee.io">kiloGrand</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://kilogrand.gitee.io/2022/08/31/xv6-Chapter-1/">https://kilogrand.gitee.io/2022/08/31/xv6-Chapter-1/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://kilogrand.gitee.io" target="_blank">kiloGrand</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/xv6/">xv6</a></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/08/30/xv6-lab1/"><img class="prev-cover" src="/img/coding.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">xv6实验1</div></div></a></div><div class="next-post pull-right"><a href="/2022/08/31/xv6-Chapter-2/"><img class="next-cover" src="/img/coding.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">xv6 第二章</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/08/31/xv6-Chapter-2/" title="xv6 第二章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第二章</div></div></a></div><div><a href="/2022/08/31/xv6-Chapter-3/" title="xv6 第三章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第三章</div></div></a></div><div><a href="/2022/08/31/xv6-Chapter-4/" title="xv6 第四章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第四章</div></div></a></div><div><a href="/2022/08/31/xv6-Chapter-5/" title="xv6 第五章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第五章</div></div></a></div><div><a href="/2022/08/31/xv6-Chapter-7/" title="xv6 第七章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第七章</div></div></a></div><div><a href="/2022/08/31/xv6-Chapter-6/" title="xv6 第六章"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-31</div><div class="title">xv6 第六章</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/profile.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">kiloGrand</div><div class="author-info__description">coder && data-science researcher</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kiloGrand/"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3"><span class="toc-number">1.</span> <span class="toc-text">第一章：操作系统接口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-Processes-and-memory-1-1-%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%86%85%E5%AD%98"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 Processes and memory[1.1 进程和内存]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-I-O-and-File-descriptors-1-2-I-O-%E5%92%8C%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 I&#x2F;O and File descriptors[1.2 I&#x2F;O 和文件描述符]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-Pipes-1-3-%E7%AE%A1%E9%81%93"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 Pipes[1.3 管道]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-File-system-1-4-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.4.</span> <span class="toc-text">1.4 File system[1.4 文件系统]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-Real-world-1-5-%E7%8E%B0%E5%AE%9E%E6%83%85%E5%86%B5"><span class="toc-number">1.5.</span> <span class="toc-text">1.5 Real world[1.5 现实情况]</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-6-Exercises-1-6-%E7%BB%83%E4%B9%A0"><span class="toc-number">1.6.</span> <span class="toc-text">1.6 Exercises[1.6 练习]</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/31/xv6-Chapter-9/" title="xv6 第九章">xv6 第九章</a><time datetime="2022-08-31T01:41:10.000Z" title="发表于 2022-08-31 09:41:10">2022-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/31/xv6-Chapter-8/" title="xv6 第八章">xv6 第八章</a><time datetime="2022-08-31T00:41:10.000Z" title="发表于 2022-08-31 08:41:10">2022-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/31/xv6-Chapter-7/" title="xv6 第七章">xv6 第七章</a><time datetime="2022-08-30T23:41:10.000Z" title="发表于 2022-08-31 07:41:10">2022-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/31/xv6-Chapter-6/" title="xv6 第六章">xv6 第六章</a><time datetime="2022-08-30T22:41:10.000Z" title="发表于 2022-08-31 06:41:10">2022-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/08/31/xv6-Chapter-5/" title="xv6 第五章">xv6 第五章</a><time datetime="2022-08-30T21:41:10.000Z" title="发表于 2022-08-31 05:41:10">2022-08-31</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By kiloGrand</div><div class="footer_custom_text">Hi, welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
