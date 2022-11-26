@@ -1,0 +1,249 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>情感分析常见数据集介绍 | kiloGrand</title><meta name="keywords" content="sentiment analysis"><meta name="author" content="kiloGrand"><meta name="copyright" content="kiloGrand"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本文介绍情感分析领域最常见的一些数据集。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="情感分析常见数据集介绍">
+<meta property="og:url" content="https://kilogrand.gitee.io/2022/10/01/nlp-sentiment-analysis-dataset/index.html">
+<meta property="og:site_name" content="kiloGrand">
+<meta property="og:description" content="本文介绍情感分析领域最常见的一些数据集。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kilogrand.gitee.io/img/coding.jpg">
+<meta property="article:published_time" content="2022-09-30T16:41:10.000Z">
+<meta property="article:modified_time" content="2022-10-28T08:02:51.899Z">
+<meta property="article:author" content="kiloGrand">
+<meta property="article:tag" content="sentiment analysis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kilogrand.gitee.io/img/coding.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://kilogrand.gitee.io/2022/10/01/nlp-sentiment-analysis-dataset/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '情感分析常见数据集介绍',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-10-28 16:02:51'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/profile.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/coding.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">kiloGrand</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">情感分析常见数据集介绍</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-09-30T16:41:10.000Z" title="发表于 2022-10-01 00:41:10">2022-10-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-10-28T08:02:51.899Z" title="更新于 2022-10-28 16:02:51">2022-10-28</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/NLP/">NLP</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>16分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="情感分析常见数据集介绍"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>本文介绍情感分析领域最常见的一些数据集。</p>
+<span id="more"></span>
+<p><strong>目录</strong></p>
+<ul>
+<li>TOC<br>{:toc}</li>
+</ul>
+<h2 id="SemEval"><a href="#SemEval" class="headerlink" title="SemEval"></a>SemEval</h2><h3 id="SemEval-2014-Task-4-Aspect-Based-Sentiment-Analysis"><a href="#SemEval-2014-Task-4-Aspect-Based-Sentiment-Analysis" class="headerlink" title="SemEval-2014 Task 4: Aspect Based Sentiment Analysis"></a>SemEval-2014 Task 4: Aspect Based Sentiment Analysis</h3><p>任务的介绍主要参考了<a target="_blank" rel="noopener" href="https://www.aclweb.org/anthology/S14-2004.pdf">SemEval-2014 Task 4: Aspect Based Sentiment Analysis</a>，官方网站为<a target="_blank" rel="noopener" href="http://alt.qcri.org/semeval2014/task4/">SemEval-2014 Task 4</a>。</p>
+<p>这是SemEval-2014语义评测任务的第4个任务，它又包含4个子任务。</p>
+<h4 id="子任务1：Aspect-term-extraction"><a href="#子任务1：Aspect-term-extraction" class="headerlink" title="子任务1：Aspect term extraction"></a>子任务1：Aspect term extraction</h4><p>给定针对某个entity(比如餐馆)的一些句子，识别其中的aspect term。比如句子”The food was nothing much, but I loved the staff”，我们需要识别”food”和”staff”这两个aspect term。一个句子里可能会出现多个(或者零个)aspect term。另外aspect term可能包含多个词，比如”The hard disk is very noisy”，这里的aspect term是”hard disk”。</p>
+<h4 id="子任务2：Aspect-term的极性分类"><a href="#子任务2：Aspect-term的极性分类" class="headerlink" title="子任务2：Aspect term的极性分类"></a>子任务2：Aspect term的极性分类</h4><p>给定一个句子和这个句子里的所有aspect term，判定每一个term的情感极性。可能的极性包括正面(positive)、负面(negative)、中性(neutral)和冲突(conflict)。比如：</p>
+<p>“I loved their <strong>fajitas</strong>” → {fajitas: positive}<br>“I hated their <strong>fajitas</strong>, but their <strong>salads</strong> were great” → {fajitas: negative, salads: positive}<br>“The <strong>fajitas</strong> are their first plate” → {fajitas: neutral}<br>“The <strong>fajitas</strong> were great to taste, but not to see” → {fajitas: conflict}</p>
+<p>冲突的意思是在这个句子里既有正面的评价也有负面的评价，比如上面的第四个句子。</p>
+<h4 id="子任务3：Aspect类别-category-识别"><a href="#子任务3：Aspect类别-category-识别" class="headerlink" title="子任务3：Aspect类别(category)识别"></a>子任务3：Aspect类别(category)识别</h4><p>因为很多不同的aspect term都可以归为一类，比如fajitas和salads都是餐馆的菜品，我们希望把它们都归类到food。这个任务定义了几个类别，比如餐馆(restaurant)的数据集上定义里food, service, price, ambience, anecdotes/miscellaneous等5个类别。这个任务为：给定一个句子，识别出其中的类别(注意一个句子可能包含多个类别)。比如：</p>
+<p>“The restaurant was too expensive”  → {<strong>price</strong>}<br>“The restaurant was expensive, but the menu was great” → {<strong>price</strong>, <strong>food</strong>}</p>
+<p>有的读者可能回想，如果能识别aspect term，然后再判断aspect term是哪个category。这可能有一个问题，对于隐式的aspect，可能只有形容词而没有名词，比如第一个句子没有price这样的aspect term，我们需要根据形容词expensive来推测类别为price。</p>
+<h4 id="子任务4：Aspect类别的情感分类"><a href="#子任务4：Aspect类别的情感分类" class="headerlink" title="子任务4：Aspect类别的情感分类"></a>子任务4：Aspect类别的情感分类</h4><p>给定一个句子以及句子里的一个或者多个aspect类别，输出每个类别的情感分类。和前面的term分类一样，这里的分类也是正面(positive)、负面(negative)、中性(neutral)和冲突(conflict)。比如：</p>
+<p>“The restaurant was too expensive” → {price: negative}<br>“The restaurant was expensive, but the menu was great” → {price: negative, food: positive}</p>
+<p>对于上面的第一个例子，输入是句子和negative与food两个类别，输出是这两个类别的极性。</p>
+<h4 id="示例数据"><a href="#示例数据" class="headerlink" title="示例数据"></a>示例数据</h4><p>全部数据可以在<a target="_blank" rel="noopener" href="http://alt.qcri.org/semeval2014/task4/index.php?id=data-and-tools">这里</a>下载，它包括餐馆和笔记本电脑两个数据集，其中餐馆数据集包含上面的4个子任务的标注，而笔记本电脑的数据只有前两个任务的标注数据(没有类别的标注)。</p>
+<p>下面是餐馆的一个示例数据：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;sentence id=&quot;813&quot;&gt;</span><br><span class="line">          &lt;text&gt;All the appetizers and salads were fabulous, the steak was mouth watering and the pasta was delicious!!!&lt;/text&gt;</span><br><span class="line">          &lt;aspectTerms&gt;</span><br><span class="line">                    &lt;aspectTerm term=&quot;appetizers&quot; polarity=&quot;positive&quot; from=&quot;8&quot; to=&quot;18&quot;/&gt;</span><br><span class="line">                    &lt;aspectTerm term=&quot;salads&quot; polarity=&quot;positive&quot; from=&quot;23&quot; to=&quot;29&quot;/&gt;</span><br><span class="line">                    &lt;aspectTerm term=&quot;steak&quot; polarity=&quot;positive&quot; from=&quot;49&quot; to=&quot;54&quot;/&gt;</span><br><span class="line">                    &lt;aspectTerm term=&quot;pasta&quot; polarity=&quot;positive&quot; from=&quot;82&quot; to=&quot;87&quot;/&gt;</span><br><span class="line">          &lt;/aspectTerms&gt;</span><br><span class="line">          &lt;aspectCategories&gt;</span><br><span class="line">                    &lt;aspectCategory category=&quot;food&quot; polarity=&quot;positive&quot;/&gt;</span><br><span class="line">          &lt;/aspectCategories&gt;</span><br><span class="line">&lt;/sentence&gt;</span><br></pre></td></tr></table></figure>
+<p>下面是笔记本电脑的示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;sentence id=&quot;353&quot;&gt;</span><br><span class="line">          &lt;text&gt;From the build quality to the performance, everything about it has been sub-par from what I would have expected from Apple.&lt;/text&gt;</span><br><span class="line">          &lt;aspectTerms&gt;</span><br><span class="line">                    &lt;aspectTerm term=&quot;build quality&quot; polarity=&quot;negative&quot; from=&quot;9&quot; to=&quot;22&quot;/&gt;</span><br><span class="line">                    &lt;aspectTerm term=&quot;performance&quot; polarity=&quot;negative&quot; from=&quot;30&quot; to=&quot;41&quot;/&gt;</span><br><span class="line">          &lt;/aspectTerms&gt;</span><br><span class="line">&lt;/sentence&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="SemEval-2015-Task-12-Aspect-Based-Sentiment-Analysis"><a href="#SemEval-2015-Task-12-Aspect-Based-Sentiment-Analysis" class="headerlink" title="SemEval-2015 Task 12: Aspect Based Sentiment Analysis"></a>SemEval-2015 Task 12: Aspect Based Sentiment Analysis</h3><p>任务的介绍主要参考了<a target="_blank" rel="noopener" href="https://www.aclweb.org/anthology/S15-2082.pdf">SemEval-2015 Task 12: Aspect Based Sentiment Analysis</a>，官方网站为<a target="_blank" rel="noopener" href="http://alt.qcri.org/semeval2015/task12/">SemEval-2015 Task 12</a>。</p>
+<p>这是SemEval-2014任务的任务假定评论的都是给定实体(餐馆或者笔记本电脑)的某个属性，但是我们也可能点评这个实体的部件，比如笔记本电脑的鼠标。前面介绍过，aspect更加通用的表示方法是一棵树。不过这里的任务还是简化里一些，认为这棵树最多两层，树根是餐馆或者笔记本电脑，我们可以点评电脑的属性(比如价格)，也可以点评部件鼠标的属性(比如鼠标的灵敏度)。此外，有一些点评aspect的句子并不见得会出现对应的名词，比如下面的文字：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">They sent it back with a huge crack in it and it still didn&#x27;t work; and that was the fourth time I’ve sent it to them to get fixed</span><br></pre></td></tr></table></figure>
+<p>它点评的实体是餐馆的服务(service)，属性是服务的质量(quality)，但是文字中没有任何service或者quality相关的文字。这和前面的expensive的句子类似的。因此2015年的任务预定义里所有的Entity和属性，然后让我们识别文本中出现里哪些实体和属性的组合，也就是E#A。比如上面的句子，输出就是service#quality。另外这个任务的输入不是一个一个的句子，而是整段评论，这样我们可以利用上下文信息。当然标注和识别的粒度还是句子，只不过我们的算法可以(但大部分算法都没有)利用上下文的信息。</p>
+<h4 id="任务1：In-domain任务"><a href="#任务1：In-domain任务" class="headerlink" title="任务1：In-domain任务"></a>任务1：In-domain任务</h4><p>给定一个完整的评论，我们需要完成如下3个子任务。</p>
+<h5 id="Aspect类别识别"><a href="#Aspect类别识别" class="headerlink" title="Aspect类别识别"></a>Aspect类别识别</h5><p>识别评论里所有的实体(E)和属性(A)对。E和A都是预定义集合中的某一个值，比如餐馆数据集，E包含laptop, keyboard, operating system, restaurant, food, drinks等实体和performance, design, price, quality等属性。</p>
+<p>更具体的，对于笔记本电脑数据集来说，E共用22个实体类别(比如LAPTOP, DISPLAY, CPU, MOTHERBOARD, HARD DISC, MEMORY, BATTERY等)和9个属性标签(比如GENERAL, PRICE, QUALITY, OPERATION_PERFORMANCE等)。完整的实体列表和属性标签列表可以参考<a target="_blank" rel="noopener" href="http://alt.qcri.org/semeval2015/task12/data/uploads/semeval2015_absa_laptops_annotationguidelines.pdf">这里</a>，下面是一些示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">(1)  It fires up in the morning in less than 30 seconds and I have never had any issues with it freezing. → &#123;LAPTOP#OPERATION_PERFORMANCE&#125;</span><br><span class="line">(2)  Sometimes you will be moving your finger and the pointer will not even move.  → &#123;MOUSE#OPERATION_PERFORMANCE&#125;</span><br><span class="line">(3)  The backlit keys are wonderful when you are working in the dark.  → &#123;KEYBOARD#DESIGN_FEATURES&#125;</span><br><span class="line">(4)  I dislike the quality and the placement of the speakers. &#123;MULTIMEDIA DEVICES#QUALITY&#125;, &#123;MULTIMEDIA DEVICES#DESIGN_FEATURES&#125;</span><br><span class="line">(5)  The applications are also very easy to find and maneuver.  → &#123;SOFTWARE#USABILITY&#125;</span><br><span class="line">(6)  I took it to the shop and they said it would cost too much to repair it.  → &#123;SUPPORT#PRICE&#125;</span><br><span class="line">(7)  It is extremely portable and easily connects to WIFI at the library and elsewhere. → &#123;LAPTOP#PORTABILITY&#125;, &#123;LAPTOP#CONNECTIVITY&#125;</span><br></pre></td></tr></table></figure>
+<p>比如第一个句子是说笔记本的操作响应很快，而第二个是说鼠标的操作很不灵敏。</p>
+<p>对于餐馆数据集来说，E有6个实体类别(RESTAURANT, FOOD, DRINKS, SERVICE, AMBIENCE, LOCATION)和5个属性标签(GENERAL, PRICES, QUALITY, STYLE_OPTIONS, MISCELLANEOUS)，详细信息可以参考<a target="_blank" rel="noopener" href="http://alt.qcri.org/semeval2015/task12/data/uploads/semeval2015_absa_restaurants_annotationguidelines.pdf">这里</a>，下面是一些示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(1) Great for a romantic evening, but over-priced. → &#123;AMBIENCE#GENERAL&#125;, &#123;RESTAURANT#PRICES&#125;</span><br><span class="line">(2) The fajitas were delicious, but expensive. → &#123;FOOD#QUALITY&#125;, &#123;FOOD# PRICES&#125;</span><br><span class="line">(3)The exotic food is beautifully presented and is a delight in delicious combinations. → &#123;FOOD#STYLE_OPTIONS&#125;, &#123;FOOD#QUALITY&#125;</span><br><span class="line">(4) The atmosphere isn&#x27;t the greatest , but I suppose that&#x27;s how they keep the prices down. → &#123;AMBIENCE#GENERAL&#125;, &#123;RESTAURANT# PRICES&#125;</span><br><span class="line">(5) The staff is incredibly helpful and attentive. → &#123;SERVICE# GENERAL&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="Opinion-Target-Expression（OTE-识别"><a href="#Opinion-Target-Expression（OTE-识别" class="headerlink" title="Opinion Target Expression（OTE)识别"></a>Opinion Target Expression（OTE)识别</h5><p>这个任务只有餐馆数据集上有标注数据。OTE任务的输入是所有的E#A对，需要识别E#A对里实体E对应的字符串。当隐式的表达实体时用特殊的”NULL”表示，比如代词”它”这样的代词，有的文本甚至根本找不到和E相关的字符串。下面是一些例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(1) Great for a romantic evening, but over-priced. → &#123;AMBIENCE#GENERAL, “NULL”&#125;, &#123;RESTAURANT# PRICES, “NULL”&#125;</span><br><span class="line">(2) The fajitas were delicious, but expensive. → &#123;FOOD#QUALITY, “fajitas”&#125;, &#123;FOOD# PRICES, “fajitas”&#125;</span><br><span class="line">(3) The exotic food is beautifully presented and is a delight in delicious combinations. → &#123;FOOD#STYLE_OPTIONS, “exotic food”&#125;, &#123;FOOD# QUALITY, “exotic food”&#125;</span><br><span class="line">(4) The atmosphere isn&#x27;t the greatest , but I suppose that&#x27;s how they keep the prices down. → &#123;AMBIENCE#GENERAL, “atmosphere”&#125;, &#123;RESTAURANT# PRICES, “NULL”&#125;</span><br><span class="line">(5) The staff is incredibly helpful and attentive. → &#123;SERVICE# GENERAL, “staff”&#125;</span><br></pre></td></tr></table></figure>
+<p>比如在第4个句子里，they指代的是餐馆，但是它不是OTE。</p>
+<h5 id="情感分类"><a href="#情感分类" class="headerlink" title="情感分类"></a>情感分类</h5><p>给定一个句子(有上下文)和所有的E#A对，判断其情感分类，可能的分类为正面、负面和中性。这和2014年的任务有所不同。下面是一些示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">(1) The applications are also very easy to find and maneuver. → &#123;SOFTWARE#USABILITY,  positive&#125;</span><br><span class="line">(2) The fajitas were great to taste, but not to see”→ &#123;FOOD#QUALITY, “fajitas”, positive&#125;,  &#123;FOOD#STYLE_OPTIONS, “fajitas”, negative &#125;</span><br><span class="line">(3) We were planning to get dessert, but the waitress basically through the bill at us before we had a chance to order.  → &#123;SERVICE# GENERAL, “waitress”, negative&#125;</span><br><span class="line">(4) It does run a little warm but that is a negligible concern.  → &#123;LAPTOP#QUALITY neutral&#125;</span><br><span class="line">(5) The fajitas are nothing out of the ordinary” → &#123;FOOD#GENERAL, “fajitas”,  neutral&#125;</span><br><span class="line">(6) I bought this laptop yesterday. → &#123;&#125;</span><br><span class="line">(7) The fajitas are their first plate  → &#123;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="任务2：Out-of-domain任务"><a href="#任务2：Out-of-domain任务" class="headerlink" title="任务2：Out-of-domain任务"></a>任务2：Out-of-domain任务</h4><p>增加里一个酒店的测试数据集(没有训练数据)，然后考察模型则不同领域的泛化能力。它的输入是E#A对和句子，要求我们输出这个E#A对的情感极性。</p>
+<p>下面是一个完整的评论的标注数据：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Review id:&quot;1004293&quot;</span><br><span class="line"> Judging from previous posts this used to be a good place, but not any longer.</span><br><span class="line"> &#123;target:&quot;NULL&quot; category:&quot;RESTAURANT#GENERAL&quot; polarity:&quot;negative&quot; from:&quot;-&quot; to=&quot;-&quot;&#125;</span><br><span class="line"> We, there were four of us, arrived at noon - the place was empty - and the staff acted </span><br><span class="line"> like we were imposing on them and they were very rude.</span><br><span class="line"> &#123;target:&quot;staff&quot; category:&quot;SERVICE#GENERAL&quot; polarity:&quot;negative&quot; from:&quot;75&quot; to:&quot;80&quot;&#125;</span><br><span class="line"> They never brought us complimentary noodles, ignored repeated requests for sugar, </span><br><span class="line"> and threw our dishes on the table.</span><br><span class="line"> &#123;target:&quot;NULL&quot; category:&quot;SERVICE#GENERAL&quot; polarity:&quot;negative&quot; from:&quot;-&quot; to:&quot;-&quot;&#125;</span><br><span class="line"> The food was lousy - too sweet or too salty and the portions tiny.</span><br><span class="line"> &#123;target:&quot;food&quot; category=&quot;FOOD#QUALITY&quot; polarity=&quot;negative&quot; from:&quot;4&quot; to:&quot;8&quot;&#125;</span><br><span class="line"> &#123;target:&quot;portions&quot; category:&quot;FOOD#STYLE_OPTIONS&quot; polarity:&quot;negative&quot; from:&quot;52&quot; to:&quot;60&quot;&#125;</span><br><span class="line"> After all that, they complained to me about the small tip.</span><br><span class="line"> &#123;target:&quot;NULL&quot; category:&quot;SERVICE#GENERAL&quot; polarity:&quot;negative&quot; from:&quot;-&quot; to:&quot;-&quot;&#125;</span><br><span class="line">			</span><br><span class="line"> Avoid this place!</span><br><span class="line"> &#123;target:&quot;place&quot; category:&quot;RESTAURANT#GENERAL&quot; polarity:&quot;negative&quot; from:&quot;11&quot; to:&quot;16&quot;&#125;</span><br></pre></td></tr></table></figure>
+<p>其中from和to表示OTE字符串在句子开始和结束的下标。</p>
+<h3 id="SemEval-2016-Task-5-Aspect-Based-Sentiment-Analysis"><a href="#SemEval-2016-Task-5-Aspect-Based-Sentiment-Analysis" class="headerlink" title="SemEval-2016 Task 5: Aspect Based Sentiment Analysis"></a>SemEval-2016 Task 5: Aspect Based Sentiment Analysis</h3><p>任务的介绍主要参考了<a target="_blank" rel="noopener" href="https://www.aclweb.org/anthology/S16-1002.pdf">SemEval-2016 Task 5: Aspect Based Sentiment Analysis</a>，官方网站为<a target="_blank" rel="noopener" href="http://alt.qcri.org/semeval2016/task5/">SemEval-2016 Task 5</a>。</p>
+<p>2016年的任务延续里2015年的任务，为它增加了新的测试数据(15年的训练数据和测试数据都变成16年的训练数据)，此外它还首次加入了英语之外的多种语言，包括中文。它包括如下几个子任务：</p>
+<h4 id="句子级别的ABSA-Aspect-Based-Sentiment-Analysis"><a href="#句子级别的ABSA-Aspect-Based-Sentiment-Analysis" class="headerlink" title="句子级别的ABSA(Aspect-Based Sentiment Analysis)"></a>句子级别的ABSA(Aspect-Based Sentiment Analysis)</h4><p>给定某个实体(笔记本电脑、餐馆或者酒店)的一篇评论的一个句子，需要确定所有观点三元组的如下内容(slot)：</p>
+<h5 id="Aspect-Category-Detection"><a href="#Aspect-Category-Detection" class="headerlink" title="Aspect Category Detection"></a>Aspect Category Detection</h5><p>这个任务是确定文本里所有出现的E#A对，其中E来自预定义的实体类列表，A来自预定义的属性标签列表。</p>
+<h5 id="Opinion-Target-Expression-OTE"><a href="#Opinion-Target-Expression-OTE" class="headerlink" title="Opinion Target Expression (OTE)"></a>Opinion Target Expression (OTE)</h5><p>和上年的任务一样，需要确定每个E#A对里实体对应的字符串的开始和结束下标，如果找不到则输出”NULL”。只有餐馆的数据有这个子任务。</p>
+<h5 id="情感极性"><a href="#情感极性" class="headerlink" title="情感极性"></a>情感极性</h5><p>判断每一个E#A对的情感分类，类别包括正面、负面和中性。</p>
+<p>上面的任务在人工标注时每次处理一个句子，但是会参考它的前后上下文的其它句子。下面是一个笔记本的评论的标注示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">S1:The So called laptop Runs to Slow and I hate it! →</span><br><span class="line">&#123;LAPTOP#OPERATION_PERFORMANCE, negative&#125;, &#123;LAPTOP#GENERAL, negative&#125;</span><br><span class="line">S2:Do not buy it! → &#123;LAPTOP#GENERAL, negative&#125;</span><br><span class="line">S3:It is the worst laptop ever. → &#123;LAPTOP#GENERAL, negative&#125;</span><br></pre></td></tr></table></figure>
+<p>下面是餐馆的数据：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">S1:I was very disappointed with this restaurant. →</span><br><span class="line">&#123;RESTAURANT#GENERAL, “restaurant”, negative, from=&quot;34&quot; to=&quot;44&quot;&#125;</span><br><span class="line">S2:I’ve asked a cart attendant for a lotus leaf wrapped rice and she replied back rice and just walked away. →&#123;SERVICE#GENERAL, “cart attendant”, negative, from=&quot;12&quot; to=&quot;26&quot;&#125;</span><br><span class="line">S3:I had to ask her three times before she finally came back with the dish I’ve requested. →</span><br><span class="line">&#123;SERVICE#GENERAL, “NULL”, negative&#125;</span><br><span class="line">S4:Food was okay, nothing great. →</span><br><span class="line">&#123;FOOD#QUALITY, “Food”, neutral, from=&quot;0&quot; to=&quot;4&quot;&#125;</span><br><span class="line">S5:Chow fun was dry; pork shu mai was more than usually greasy and had to share a table with loud and rude family. →</span><br><span class="line">&#123;FOOD#QUALITY, “Chow fun”, negative, from=&quot;0&quot; to=&quot;8&quot;&#125;,</span><br><span class="line">&#123;FOOD#QUALITY, “pork shu mai”, negative, from=&quot;18&quot; to=&quot;30&quot;&#125;,</span><br><span class="line">&#123;AMBIENCE#GENERAL, “NULL”, negative&#125;</span><br><span class="line">S6:I/we will never go back to this place again. →</span><br><span class="line">&#123;RESTAURANT#GENERAL, “place”, negative, from=&quot;32&quot; to=&quot;37&quot;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="文本级别的ABSA"><a href="#文本级别的ABSA" class="headerlink" title="文本级别的ABSA"></a>文本级别的ABSA</h4><p>上面的句子级别的问题是模型不能参考上下文(人工标注是参考了的)，因此还有一个文本级别的ABSA任务。它的任务和前面是一样的，只不过输入是整个评论文本，下面是一些示例。</p>
+<p>下面是整个评论文本：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Review id:LPT1 (Laptop)</span><br><span class="line">&quot;The So called laptop Runs to Slow and I hate it! Do not buy it! It is the worst laptop ever.&quot;</span><br></pre></td></tr></table></figure>
+<p>期望的输出(标注)为：<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;LAPTOP#OPERATION_PERFORMANCE, negative&#125;</span><br><span class="line">&#123;LAPTOP#GENERAL, negative&#125;</span><br></pre></td></tr></table></figure></p>
+<p>但是它并不能简单的把文本分成句子，然后把所有句子的结果合并起来，因为一个段落里可能有多个句子都在说同一个E#A对，如果是这样的话需要判断最主要的情感倾向，比如下面的例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Review id:RST1 (Restaurant)</span><br><span class="line">&quot;I was very disappointed with this restaurant. I’ve asked a cart attendant for a lotus leaf wrapped rice and she replied back rice and just walked away. I had to ask her three times before she finally came back with the dish I’ve requested. Food was okay, nothing great. Chow fun was dry; pork shu mai was more than usually greasy and had to share a table with loud and rude family. I/we will never go back to this place again.&quot;</span><br></pre></td></tr></table></figure>
+<p>它的输出为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;RESTAURANT#GENERAL, negative&#125;</span><br><span class="line">&#123;SERVICE#GENERAL, negative&#125;</span><br><span class="line">&#123;FOOD#QUALITY, negative&#125;</span><br><span class="line">&#123;AMBIENCE#GENERAL, negative&#125;</span><br></pre></td></tr></table></figure>
+<p>它就是前面句子级别的同一段文本，关于FOOD#QUALITY有一个中性两个负面的，因此总的情感倾向是负面的。如果多个句子的情感倾向是冲突的，比如一个正面一个负面，则需要识别为冲突(conflict)。比如下面的例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Review id: RST2 (Restaurant)</span><br><span class="line">“This little place has a cute interior decor and affordable city prices. The pad seew chicken was delicious, however the pad thai was far too oily. I would just ask for no oil next time.”</span><br></pre></td></tr></table></figure>
+<p>它的输出为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;AMBIENCE#GENERAL, positive&#125;</span><br><span class="line">&#123;RESTAURANT#PRICES, positive&#125;</span><br><span class="line">&#123;FOOD#QUALITY, conflict&#125;</span><br><span class="line">&#123;RESTAURANT#GENERAL, positive&#125;</span><br></pre></td></tr></table></figure>
+<p>FOOD#QUALITY既有正面的又有负面的，因此标注为冲突。</p>
+<h4 id="Out-of-domain-ABSA"><a href="#Out-of-domain-ABSA" class="headerlink" title="Out-of-domain ABSA"></a>Out-of-domain ABSA</h4><p>这个任务的测试数据的领域没有训练数据，它考察的是模型在不同领域的泛化能力。</p>
+<h2 id="IMDB"><a href="#IMDB" class="headerlink" title="IMDB"></a>IMDB</h2><p>电影的评论数据，二分类任务，包括25,000个训练数据和25,000个测试数据。可以在<a target="_blank" rel="noopener" href="http://ai.stanford.edu/~amaas/data/sentiment/">这里</a>下载。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://kilogrand.gitee.io">kiloGrand</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://kilogrand.gitee.io/2022/10/01/nlp-sentiment-analysis-dataset/">https://kilogrand.gitee.io/2022/10/01/nlp-sentiment-analysis-dataset/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://kilogrand.gitee.io" target="_blank">kiloGrand</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/sentiment-analysis/">sentiment analysis</a></div><div class="post_share"></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/09/04/xv6-lab4/"><img class="prev-cover" src="/img/coding.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">xv6 实验4 Traps</div></div></a></div><div class="next-post pull-right"><a href="/2022/10/02/nlp-sentiment-analysis-survey/"><img class="next-cover" src="/img/coding.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">情感分析简介</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/10/03/nlp-sentiment-analysis-bert-atsc/" title="BERT在情感分析ATSC子任务的应用"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-03</div><div class="title">BERT在情感分析ATSC子任务的应用</div></div></a></div><div><a href="/2022/10/02/nlp-sentiment-analysis-survey/" title="情感分析简介"><img class="cover" src="/img/coding.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-02</div><div class="title">情感分析简介</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/profile.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">kiloGrand</div><div class="author-info__description">coder && data-science researcher</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/kiloGrand/"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SemEval"><span class="toc-number">1.</span> <span class="toc-text">SemEval</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SemEval-2014-Task-4-Aspect-Based-Sentiment-Analysis"><span class="toc-number">1.1.</span> <span class="toc-text">SemEval-2014 Task 4: Aspect Based Sentiment Analysis</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AD%90%E4%BB%BB%E5%8A%A11%EF%BC%9AAspect-term-extraction"><span class="toc-number">1.1.1.</span> <span class="toc-text">子任务1：Aspect term extraction</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AD%90%E4%BB%BB%E5%8A%A12%EF%BC%9AAspect-term%E7%9A%84%E6%9E%81%E6%80%A7%E5%88%86%E7%B1%BB"><span class="toc-number">1.1.2.</span> <span class="toc-text">子任务2：Aspect term的极性分类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AD%90%E4%BB%BB%E5%8A%A13%EF%BC%9AAspect%E7%B1%BB%E5%88%AB-category-%E8%AF%86%E5%88%AB"><span class="toc-number">1.1.3.</span> <span class="toc-text">子任务3：Aspect类别(category)识别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AD%90%E4%BB%BB%E5%8A%A14%EF%BC%9AAspect%E7%B1%BB%E5%88%AB%E7%9A%84%E6%83%85%E6%84%9F%E5%88%86%E7%B1%BB"><span class="toc-number">1.1.4.</span> <span class="toc-text">子任务4：Aspect类别的情感分类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%E6%95%B0%E6%8D%AE"><span class="toc-number">1.1.5.</span> <span class="toc-text">示例数据</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SemEval-2015-Task-12-Aspect-Based-Sentiment-Analysis"><span class="toc-number">1.2.</span> <span class="toc-text">SemEval-2015 Task 12: Aspect Based Sentiment Analysis</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%BB%E5%8A%A11%EF%BC%9AIn-domain%E4%BB%BB%E5%8A%A1"><span class="toc-number">1.2.1.</span> <span class="toc-text">任务1：In-domain任务</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Aspect%E7%B1%BB%E5%88%AB%E8%AF%86%E5%88%AB"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">Aspect类别识别</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Opinion-Target-Expression%EF%BC%88OTE-%E8%AF%86%E5%88%AB"><span class="toc-number">1.2.1.2.</span> <span class="toc-text">Opinion Target Expression（OTE)识别</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%83%85%E6%84%9F%E5%88%86%E7%B1%BB"><span class="toc-number">1.2.1.3.</span> <span class="toc-text">情感分类</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%BB%E5%8A%A12%EF%BC%9AOut-of-domain%E4%BB%BB%E5%8A%A1"><span class="toc-number">1.2.2.</span> <span class="toc-text">任务2：Out-of-domain任务</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SemEval-2016-Task-5-Aspect-Based-Sentiment-Analysis"><span class="toc-number">1.3.</span> <span class="toc-text">SemEval-2016 Task 5: Aspect Based Sentiment Analysis</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%A5%E5%AD%90%E7%BA%A7%E5%88%AB%E7%9A%84ABSA-Aspect-Based-Sentiment-Analysis"><span class="toc-number">1.3.1.</span> <span class="toc-text">句子级别的ABSA(Aspect-Based Sentiment Analysis)</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Aspect-Category-Detection"><span class="toc-number">1.3.1.1.</span> <span class="toc-text">Aspect Category Detection</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Opinion-Target-Expression-OTE"><span class="toc-number">1.3.1.2.</span> <span class="toc-text">Opinion Target Expression (OTE)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%83%85%E6%84%9F%E6%9E%81%E6%80%A7"><span class="toc-number">1.3.1.3.</span> <span class="toc-text">情感极性</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E6%9C%AC%E7%BA%A7%E5%88%AB%E7%9A%84ABSA"><span class="toc-number">1.3.2.</span> <span class="toc-text">文本级别的ABSA</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Out-of-domain-ABSA"><span class="toc-number">1.3.3.</span> <span class="toc-text">Out-of-domain ABSA</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IMDB"><span class="toc-number">2.</span> <span class="toc-text">IMDB</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/10/03/nlp-sentiment-analysis-bert-atsc/" title="BERT在情感分析ATSC子任务的应用">BERT在情感分析ATSC子任务的应用</a><time datetime="2022-10-02T16:41:10.000Z" title="发表于 2022-10-03 00:41:10">2022-10-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/10/02/nlp-sentiment-analysis-survey/" title="情感分析简介">情感分析简介</a><time datetime="2022-10-01T16:41:10.000Z" title="发表于 2022-10-02 00:41:10">2022-10-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/10/01/nlp-sentiment-analysis-dataset/" title="情感分析常见数据集介绍">情感分析常见数据集介绍</a><time datetime="2022-09-30T16:41:10.000Z" title="发表于 2022-10-01 00:41:10">2022-10-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/09/04/xv6-lab4/" title="xv6 实验4 Traps">xv6 实验4 Traps</a><time datetime="2022-09-04T01:41:10.000Z" title="发表于 2022-09-04 09:41:10">2022-09-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/09/03/xv6-lab3/" title="xv6 实验3 page tables">xv6 实验3 page tables</a><time datetime="2022-09-03T01:41:10.000Z" title="发表于 2022-09-03 09:41:10">2022-09-03</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By kiloGrand</div><div class="footer_custom_text">Hi, welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
